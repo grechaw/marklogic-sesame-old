@@ -1,8 +1,6 @@
 package com.marklogic.semantics.sesame.client;
 
-import com.marklogic.client.DatabaseClientFactory;
-import com.marklogic.client.semantics.SPARQLQueryDefinition;
-import com.marklogic.client.semantics.SPARQLQueryManager;
+import com.marklogic.client.semantics.SPARQLBinding;
 import com.marklogic.client.semantics.SPARQLTuple;
 import com.marklogic.client.semantics.SPARQLTupleResults;
 import org.openrdf.model.Literal;
@@ -24,48 +22,45 @@ public class MarkLogicClient {
 
 	private MarkLogicClientImpl mcimpl;
 
-	private ValueFactory valueFactory;
+	private ValueFactory f;
 
 	public MarkLogicClient() {
 		this.mcimpl = new MarkLogicClientImpl();
-		valueFactory = new ValueFactoryImpl();
+		this.f = new ValueFactoryImpl();
 	}
 
 	public ValueFactory getValueFactory() {
-		return valueFactory;
+		return f;
 	}
 
-	public TupleQueryResult sendTupleQuery(String querystring){
-		mcimpl.databaseClient = DatabaseClientFactory.newClient(
-				"127.0.0.1", 8012, "admin", "admin", DatabaseClientFactory.Authentication.DIGEST);
+	public TupleQueryResult sendTupleQuery(String queryString){
 
-		SPARQLQueryManager smgr = mcimpl.databaseClient.newSPARQLQueryManager();
-		SPARQLQueryDefinition qdef = smgr.newQueryDefinition(querystring);
-		SPARQLTupleResults results = smgr.executeSelect(qdef);
+        SPARQLTupleResults results = mcimpl.performSPARQLQuery(queryString);
 
-		List<String> bindingNames = new ArrayList<String>(3);
-		for ( String bindingName: results.getBindingNames() ) {
+		List<String> bindingNames = new ArrayList<String>();
+        String bindingnames[]= results.getBindingNames();
+		for ( String bindingName: bindingnames ) {
 			bindingNames.add(bindingName);
 		}
 
 		List<BindingSet> bindingSetList = new ArrayList<BindingSet>();
-		ValueFactory f = new ValueFactoryImpl();
-
-		for ( SPARQLTuple tuple : results ) {
-			MapBindingSet mbs = new MapBindingSet(1);
-			ValueFactory factory = ValueFactoryImpl.getInstance();
-
-			URI s = factory.createURI(tuple.get("s").getValue());
-			URI p = factory.createURI(tuple.get("p").getValue());
-			Literal o = factory.createLiteral(tuple.get("o").getValue());
-
-			mbs.addBinding("s",s);
-			mbs.addBinding("p",p);
-			mbs.addBinding("o",o);
+        for ( SPARQLTuple tuple : results ) {
+			MapBindingSet mbs = new MapBindingSet();
+            for(String name : bindingNames){
+                SPARQLBinding binding = tuple.get(name);
+                String bindingtype = binding.getType().toString();
+                if (bindingtype.equals("uri")) {
+                    URI s = f.createURI(binding.getValue());
+                    mbs.addBinding(name, s);
+                } else if (bindingtype.equals("literal")) {
+                    Literal o = f.createLiteral(tuple.get("o").getValue());
+                    mbs.addBinding(name, o);
+                } else {
+                }
+            }
 			bindingSetList.add(mbs);
 		}
 
-		TupleQueryResult impl = new TupleQueryResultImpl(bindingNames,bindingSetList);
-		return (TupleQueryResult) impl;
+		return (TupleQueryResult) new TupleQueryResultImpl(bindingNames,bindingSetList);
 	}
 }
