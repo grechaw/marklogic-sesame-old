@@ -1,14 +1,24 @@
-marklogic-sesame
+# Marklogic-Sesame Repository - 
 
 com.marklogic:marklogic-sesame-repository
+
+## Introduction
+
+TBD
+
+## QuickStart
+
+TBD
+
+## Support
 
 TBD
 
 
-# Interim notes
+## Interim notes
 
 
-## Usage Examples
+### Usage Examples
 
 query usage
 ```
@@ -53,10 +63,40 @@ results.close();
 con.close();
 ```
 
-## classes of interest
+boolean usage
+```
+```
 
-### MarkLogicRepository
+graph usage
+```
+```
 
-### MarkLogicConnectionRepository
+update usage
+```
+```
 
+add/remove triples
+```
+```
 
+get/clear graph
+```
+```
+
+transactions
+```
+```
+
+get/export statements
+```
+```
+
+pagination
+```
+```
+
+### classes of interest
+
+#### MarkLogicRepository
+
+#### MarkLogicConnectionRepository
