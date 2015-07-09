@@ -10,6 +10,8 @@ import org.openrdf.query.BindingSet;
 import org.openrdf.query.QueryLanguage;
 import org.openrdf.query.TupleQuery;
 import org.openrdf.query.TupleQueryResult;
+import org.openrdf.repository.Repository;
+import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryResult;
 
 public class MarkLogicRepositoryConnectionTest {
@@ -19,12 +21,12 @@ public class MarkLogicRepositoryConnectionTest {
             throws Exception
     {
 
-        MarkLogicRepository mr = new MarkLogicRepository();
+        Repository mr = new MarkLogicRepository();
 
         mr.shutDown();
         mr.initialize();
 
-        MarkLogicRepositoryConnection con = (MarkLogicRepositoryConnection) mr.getConnection();
+        RepositoryConnection con =  mr.getConnection();
 
         Assert.assertTrue( con != null );
         String queryString = "select ?s ?p ?o { ?s ?p ?o } limit 2 ";
