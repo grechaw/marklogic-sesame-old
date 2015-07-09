@@ -12,12 +12,12 @@ TBD
 
 query usage
 ```
-MarkLogicRepository mr = new MarkLogicRepository();
+Repository mr = new MarkLogicRepository();
 
 mr.shutDown();
 mr.initialize();
 
-MarkLogicRepositoryConnection con = (MarkLogicRepositoryConnection) mr.getConnection();
+RepositoryConnection con = mr.getConnection();
 
 Assert.assertTrue( con != null );
 String queryString = "select ?s ?p ?o { ?s ?p ?o } limit 2 ";
