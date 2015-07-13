@@ -1,15 +1,20 @@
 package com.marklogic.semantics.sesame.config;
 
+import com.marklogic.semantics.sesame.MarkLogicRepositoryConnection;
 import org.junit.Assert;
 import org.junit.Ignore;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.openrdf.repository.Repository;
+import org.openrdf.repository.RepositoryConnection;
+import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.config.RepositoryFactory;
 
-/**
- * Created by jfuller on 7/10/15.
- */
 public class MarkLogicRepositoryFactoryTest {
+
+    @Rule
+    public ExpectedException exception = ExpectedException.none();
 
     @Ignore
     public void testGetRepositoryType() throws Exception {
@@ -32,8 +37,14 @@ public class MarkLogicRepositoryFactoryTest {
         config.setAuth("DIGEST");
 
         RepositoryFactory factory = new MarkLogicRepositoryFactory();
-        Assert.assertEquals("marklogic:MarkLogicRepository",factory.getRepositoryType());
+        Assert.assertEquals("marklogic:MarkLogicRepository", factory.getRepositoryType());
         Repository repo = factory.getRepository(config);
+        repo.initialize();
+        Assert.assertTrue(repo.getConnection() instanceof MarkLogicRepositoryConnection);
 
+        Repository otherrepo = factory.getRepository(config);
+        exception.expect(RepositoryException.class);
+        //try to get connection without initialising repo, throws error
+        RepositoryConnection conn = otherrepo.getConnection();
     }
 }
