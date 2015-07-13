@@ -15,6 +15,10 @@ import org.openrdf.repository.RepositoryResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.Properties;
+
 public class MarkLogicRepositoryConnectionTest {
 
     protected final Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -30,7 +34,22 @@ public class MarkLogicRepositoryConnectionTest {
             throws Exception
     {
         logger.debug("setting up test");
-        this.rep = new MarkLogicRepository("localhost",8200,"admin","admin","DIGEST");
+
+        // extrude to semantics.utils
+        Properties props = new Properties();
+        try {
+            props.load(new FileInputStream("gradle.properties"));
+        } catch (IOException e) {
+            System.err.println("problem loading properties file.");
+            System.exit(1);
+        }
+        String host = props.getProperty("mlHost");
+        int port = Integer.parseInt(props.getProperty("mlRestPort"));
+        String user = props.getProperty("adminUser");
+        String pass = props.getProperty("adminPassword");
+        // extrude to semantics.utils
+
+        this.rep = new MarkLogicRepository(host,port,user,pass,"DIGEST");
         rep.initialize();
 
         f = rep.getValueFactory();
