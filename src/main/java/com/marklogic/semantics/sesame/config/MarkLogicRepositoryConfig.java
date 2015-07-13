@@ -25,6 +25,8 @@ import org.openrdf.model.util.GraphUtil;
 import org.openrdf.model.util.GraphUtilException;
 import org.openrdf.repository.config.RepositoryConfigException;
 import org.openrdf.repository.config.RepositoryImplConfigBase;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Configuration for a SPARQL endpoint.
@@ -33,7 +35,9 @@ import org.openrdf.repository.config.RepositoryImplConfigBase;
  */
 public class MarkLogicRepositoryConfig extends RepositoryImplConfigBase {
 
-    public static ValueFactory vf= new ValueFactoryImpl();
+	protected final Logger logger = LoggerFactory.getLogger(this.getClass());
+
+	public static ValueFactory vf= new ValueFactoryImpl();
 
 	public static final URI QUERY_ENDPOINT = vf.createURI("test");
 

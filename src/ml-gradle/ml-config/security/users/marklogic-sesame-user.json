@@ -1,0 +1,5 @@
+{
+  "user-name" : "marklogic-sesame-user",
+  "password" : "marklogic-sesame-user",
+  "role" : [ "marklogic-sesame-role" ]
+}

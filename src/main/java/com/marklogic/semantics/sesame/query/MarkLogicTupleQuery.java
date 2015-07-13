@@ -4,12 +4,21 @@ import com.marklogic.semantics.sesame.client.MarkLogicClient;
 import org.openrdf.model.Value;
 import org.openrdf.query.*;
 import org.openrdf.query.impl.AbstractQuery;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
 
 public class MarkLogicTupleQuery extends AbstractQuery implements TupleQuery {
 
+    protected final Logger logger = LoggerFactory.getLogger(this.getClass());
+
     private MarkLogicClient client;
+
 	private QueryLanguage queryLanguage = QueryLanguage.SPARQL;
+
     private String queryString;
+
     private String baseURI;
 
     public MarkLogicTupleQuery() {
@@ -25,6 +34,7 @@ public class MarkLogicTupleQuery extends AbstractQuery implements TupleQuery {
     public String getBaseURI() {
         return baseURI;
     }
+
     public void setBaseURI(String baseURI) {
         this.baseURI = baseURI;
     }
@@ -36,6 +46,7 @@ public class MarkLogicTupleQuery extends AbstractQuery implements TupleQuery {
     public String getQueryString() {
         return queryString;
     }
+
     public void setQueryString(String queryString) {
         this.queryString = queryString;
     }
@@ -50,9 +61,12 @@ public class MarkLogicTupleQuery extends AbstractQuery implements TupleQuery {
     @Override
     public TupleQueryResult evaluate()
             throws QueryEvaluationException {
-
         MarkLogicClient mc = getClient();
-        return mc.sendTupleQuery(getQueryString());
+        try {
+            return mc.sendTupleQuery(getQueryString());
+        } catch (IOException e) {
+            throw new QueryEvaluationException(e);
+        }
     }
 
     @Override

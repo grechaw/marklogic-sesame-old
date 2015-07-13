@@ -10,6 +10,8 @@ import org.openrdf.model.*;
 import org.openrdf.query.*;
 import org.openrdf.repository.*;
 import org.openrdf.rio.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,17 +23,24 @@ import static org.openrdf.query.QueryLanguage.SPARQL;
 
 public class MarkLogicRepositoryConnection implements RepositoryConnection {
 
+    protected final Logger logger = LoggerFactory.getLogger(this.getClass());
+
     private static final String EVERYTHING = "CONSTRUCT { ?s ?p ?o } WHERE { ?s ?p ?o }";
+
     private static final String EVERYTHING_WITH_GRAPH = "SELECT * WHERE {  ?s ?p ?o . OPTIONAL { GRAPH ?ctx { ?s ?p ?o } } }";
+
     private static final String SOMETHING = "ASK { ?s ?p ?o }";
+
     private static final String NAMEDGRAPHS = "SELECT DISTINCT ?_ WHERE { GRAPH ?_ { ?s ?p ?o } }";
 
     private final boolean quadMode;
+
     private MarkLogicClient client;
+
     private MarkLogicRepository repository;
 
     public MarkLogicRepositoryConnection(MarkLogicRepository repository,MarkLogicClient client) {
-        this(repository,client,false);
+        this(repository, client, false);
     }
 
     public MarkLogicRepositoryConnection(MarkLogicRepository repository, MarkLogicClient client, boolean quadMode) {
@@ -46,12 +55,12 @@ public class MarkLogicRepositoryConnection implements RepositoryConnection {
     }
 
     @Override
-    public void setParserConfig(ParserConfig config) {
+    public ParserConfig getParserConfig() {
+        return null;
     }
 
     @Override
-    public ParserConfig getParserConfig() {
-        return null;
+    public void setParserConfig(ParserConfig config) {
     }
 
     @Override
@@ -104,7 +113,6 @@ public class MarkLogicRepositoryConnection implements RepositoryConnection {
     public GraphQuery prepareGraphQuery(QueryLanguage ql, String query) throws RepositoryException, MalformedQueryException {
         return null;
     }
-
     @Override
     public GraphQuery prepareGraphQuery(QueryLanguage ql, String query, String baseURI) throws RepositoryException, MalformedQueryException {
         return null;
@@ -115,7 +123,6 @@ public class MarkLogicRepositoryConnection implements RepositoryConnection {
     public BooleanQuery prepareBooleanQuery(QueryLanguage ql, String query) throws RepositoryException, MalformedQueryException {
         return null;
     }
-
     @Override
     public BooleanQuery prepareBooleanQuery(QueryLanguage ql, String query, String baseURI) throws RepositoryException, MalformedQueryException {
         return null;
@@ -126,12 +133,12 @@ public class MarkLogicRepositoryConnection implements RepositoryConnection {
     public Update prepareUpdate(QueryLanguage ql, String update) throws RepositoryException, MalformedQueryException {
         return null;
     }
-
     @Override
     public Update prepareUpdate(QueryLanguage ql, String update, String baseURI) throws RepositoryException, MalformedQueryException {
         return null;
     }
 
+    //
     @Override
     public RepositoryResult<Resource> getContextIDs() throws RepositoryException {
         try {
@@ -169,21 +176,21 @@ public class MarkLogicRepositoryConnection implements RepositoryConnection {
         return null;
     }
 
+    //
     @Override
     public boolean hasStatement(Resource subj, URI pred, Value obj, boolean includeInferred, Resource... contexts) throws RepositoryException {
         return false;
     }
-
     @Override
     public boolean hasStatement(Statement st, boolean includeInferred, Resource... contexts) throws RepositoryException {
         return false;
     }
-
     @Override
     public void exportStatements(Resource subj, URI pred, Value obj, boolean includeInferred, RDFHandler handler, Resource... contexts) throws RepositoryException, RDFHandlerException {
 
     }
 
+    //
     @Override
     public void export(RDFHandler handler, Resource... contexts) throws RepositoryException, RDFHandlerException {
 
@@ -200,13 +207,13 @@ public class MarkLogicRepositoryConnection implements RepositoryConnection {
     }
 
     @Override
-    public void setAutoCommit(boolean autoCommit) throws RepositoryException {
-
+    public boolean isAutoCommit() throws RepositoryException {
+        return false;
     }
 
     @Override
-    public boolean isAutoCommit() throws RepositoryException {
-        return false;
+    public void setAutoCommit(boolean autoCommit) throws RepositoryException {
+
     }
 
     @Override
@@ -215,13 +222,13 @@ public class MarkLogicRepositoryConnection implements RepositoryConnection {
     }
 
     @Override
-    public void setIsolationLevel(IsolationLevel level) throws IllegalStateException {
-
+    public IsolationLevel getIsolationLevel() {
+        return null;
     }
 
     @Override
-    public IsolationLevel getIsolationLevel() {
-        return null;
+    public void setIsolationLevel(IsolationLevel level) throws IllegalStateException {
+
     }
 
     @Override
@@ -309,26 +316,23 @@ public class MarkLogicRepositoryConnection implements RepositoryConnection {
 
     }
 
+    //
     @Override
     public RepositoryResult<Namespace> getNamespaces() throws RepositoryException {
         return null;
     }
-
     @Override
     public String getNamespace(String prefix) throws RepositoryException {
         return null;
     }
-
     @Override
     public void setNamespace(String prefix, String name) throws RepositoryException {
 
     }
-
     @Override
     public void removeNamespace(String prefix) throws RepositoryException {
 
     }
-
     @Override
     public void clearNamespaces() throws RepositoryException {
 

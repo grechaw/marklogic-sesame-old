@@ -1,22 +1,46 @@
 package com.marklogic.semantics.sesame;
 
-import com.marklogic.semantics.sesame.client.MarkLogicClientDependent;
 import com.marklogic.semantics.sesame.client.MarkLogicClient;
+import com.marklogic.semantics.sesame.client.MarkLogicClientDependent;
 import org.openrdf.model.ValueFactory;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.base.RepositoryBase;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 
 public class MarkLogicRepository extends RepositoryBase implements MarkLogicClientDependent {
 
+    protected final Logger logger = LoggerFactory.getLogger(this.getClass());
+
     private MarkLogicClient client;
+
+    private String host = "localhost";
+
+    private int port = 8200;
+
+    private String user = "admin";
+
+    private String password = "admin";
+
+    private String auth = "DIGEST";
 
     private boolean quadMode = false;
 
     public MarkLogicRepository() {
         super();
+        this.client =getMarkLogicClient();
+    }
+
+    public MarkLogicRepository(String host, int port, String user, String password, String auth) {
+        super();
+        this.host=host;
+        this.port=port;
+        this.user=user;
+        this.password=password;
+        this.auth=auth;
         this.client =getMarkLogicClient();
     }
 
@@ -32,12 +56,12 @@ public class MarkLogicRepository extends RepositoryBase implements MarkLogicClie
     }
 
     @Override
-    public void setDataDir(File dataDir) {
+    public File getDataDir() {
+        return null;
     }
 
     @Override
-    public File getDataDir() {
-        return null;
+    public void setDataDir(File dataDir) {
     }
 
     @Override
@@ -62,7 +86,7 @@ public class MarkLogicRepository extends RepositoryBase implements MarkLogicClie
     @Override
     public synchronized MarkLogicClient getMarkLogicClient() {
         if (client == null) {
-            client =  new MarkLogicClient();
+            client =  new MarkLogicClient(host,port,user,password,auth); // consider factory method ?
         }
         return client;
     }

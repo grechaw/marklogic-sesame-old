@@ -23,6 +23,8 @@ import org.openrdf.repository.Repository;
 import org.openrdf.repository.config.RepositoryConfigException;
 import org.openrdf.repository.config.RepositoryFactory;
 import org.openrdf.repository.config.RepositoryImplConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Creates {@link MarkLogicRepository} from a configuration.
@@ -30,6 +32,8 @@ import org.openrdf.repository.config.RepositoryImplConfig;
  * @author James Fuller
  */
 public class MarkLogicRepositoryFactory implements RepositoryFactory {
+
+	protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	public static ValueFactory vf= new ValueFactoryImpl();
 

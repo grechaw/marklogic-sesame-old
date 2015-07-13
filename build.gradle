@@ -5,7 +5,7 @@ buildscript {
         maven {url "http://rjrudin.github.io/marklogic-java/releases"}
     }
     dependencies {
-        classpath "com.marklogic:ml-gradle:2.0a9"
+        classpath "com.marklogic:ml-gradle:2.0a10"
     }
 }
 
@@ -13,7 +13,7 @@ plugins {
     id 'me.champeau.gradle.jmh' version '0.2.0'
 }
 
-//apply plugin: 'ml-gradle'
+apply plugin: 'ml-gradle'
 apply plugin: 'eclipse'
 apply plugin: 'java'
 apply plugin: 'me.champeau.gradle.jmh'
@@ -35,7 +35,10 @@ dependencies {
     compile('org.openrdf.sesame:sesame-queryresultio-sparqlxml:2.8.4')
     compile('org.openrdf.sesame:sesame-http-client:2.8.4')
     compile('org.openrdf.sesame:sesame-runtime:2.8.4')
+
+    compile('org.slf4j:slf4j-api:1.7.10')
     compile('com.marklogic:java-client-api:4.0-SNAPSHOT')
+
 
     testCompile 'com.jayway.restassured:rest-assured:2.4.1'
     testCompile 'org.hamcrest:hamcrest-all:1.3'

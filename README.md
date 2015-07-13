@@ -1,4 +1,6 @@
-# Marklogic-Sesame Repository - 
+# Marklogic-Sesame Repository
+
+MarkLogic-Sesame is a [Sesame](http://rdf4j.org/) Repository implementation that acts as a proxy to MarkLogic semantic capabilities.
 
 com.marklogic:marklogic-sesame-repository
 
