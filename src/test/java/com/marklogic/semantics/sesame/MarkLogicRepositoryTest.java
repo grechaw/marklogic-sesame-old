@@ -5,6 +5,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.openrdf.repository.Repository;
+import org.openrdf.repository.RepositoryConnection;
+import org.openrdf.repository.RepositoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,16 +37,12 @@ public class MarkLogicRepositoryTest {
     throws Exception {
 
         // TBD this will pass, so do we want to throw connection error ?
-
-        //exception.expect(Exception.class);
-        //exception.expectMessage("error1");
-
         Repository rep = new MarkLogicRepository("localhost",8200,"admin", "admin1", "DIGEST");
         rep.initialize();
+        rep.shutDown();
 
-
-
+        exception.expect(RepositoryException.class);
+        exception.expectMessage("MarkLogicRepository not initialized.");
+        RepositoryConnection conn = rep.getConnection();
     }
-
-
 }
