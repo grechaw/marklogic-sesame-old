@@ -1,6 +1,8 @@
 buildscript {
     repositories {
         mavenCentral()
+        jcenter()
+
         maven {url "http://developer.marklogic.com/maven2/"}
         maven {url "http://rjrudin.github.io/marklogic-java/releases"}
     }
@@ -13,10 +15,11 @@ plugins {
     id 'me.champeau.gradle.jmh' version '0.2.0'
 }
 
+apply plugin: 'me.champeau.gradle.jmh'
 apply plugin: 'ml-gradle'
 apply plugin: 'eclipse'
+apply plugin: 'idea'
 apply plugin: 'java'
-apply plugin: 'me.champeau.gradle.jmh'
 
 
 sourceCompatibility = "1.7"
