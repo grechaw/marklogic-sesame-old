@@ -17,7 +17,7 @@ public class MarkLogicRepository extends RepositoryBase implements MarkLogicClie
 
     private MarkLogicClient client;
 
-    private String host = "localhost";
+    private String host;
 
     private int port = 8200;
 

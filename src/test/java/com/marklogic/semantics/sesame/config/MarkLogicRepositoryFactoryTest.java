@@ -1,6 +1,8 @@
 package com.marklogic.semantics.sesame.config;
 
+import org.junit.Assert;
 import org.junit.Ignore;
+import org.junit.Test;
 import org.openrdf.repository.Repository;
 import org.openrdf.repository.config.RepositoryFactory;
 
@@ -19,14 +21,18 @@ public class MarkLogicRepositoryFactoryTest {
 
     }
 
-    @Ignore
+    @Test
     public void testGetRepository() throws Exception {
         MarkLogicRepositoryConfig config = new MarkLogicRepositoryConfig();
-        //config.setMethod(MarkLogicRepositoryConfig.HTTP_GET);
-        //config.setURL(this.service);
-        //config.addParameter("apikey", this.apikey);
+
+        config.setHost("localhost");
+        config.setPort(8200);
+        config.setUser("admin");
+        config.setPassword("admin");
+        config.setAuth("DIGEST");
 
         RepositoryFactory factory = new MarkLogicRepositoryFactory();
+        Assert.assertEquals("marklogic:MarkLogicRepository",factory.getRepositoryType());
         Repository repo = factory.getRepository(config);
 
     }

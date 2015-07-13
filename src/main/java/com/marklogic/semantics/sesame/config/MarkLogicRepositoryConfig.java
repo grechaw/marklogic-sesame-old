@@ -1,19 +1,3 @@
-/* 
- * Licensed to Aduna under one or more contributor license agreements.  
- * See the NOTICE.txt file distributed with this work for additional 
- * information regarding copyright ownership. 
- *
- * Aduna licenses this file to you under the terms of the Aduna BSD 
- * License (the "License"); you may not use this file except in compliance 
- * with the License. See the LICENSE.txt file distributed with this work 
- * for the full License.
- *
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, 
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or 
- * implied. See the License for the specific language governing permissions
- * and limitations under the License.
- */
 package com.marklogic.semantics.sesame.config;
 
 import org.openrdf.model.Graph;
@@ -28,24 +12,64 @@ import org.openrdf.repository.config.RepositoryImplConfigBase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * Configuration for a SPARQL endpoint.
- * 
- * @author James Leigh
- */
 public class MarkLogicRepositoryConfig extends RepositoryImplConfigBase {
 
 	protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	public static ValueFactory vf= new ValueFactoryImpl();
 
-	public static final URI QUERY_ENDPOINT = vf.createURI("test");
+	public static final URI QUERY_ENDPOINT = vf.createURI("http://www.openrdf.org/config/repository/sparql#query-endpoint");
 
 	public static final URI UPDATE_ENDPOINT = vf.createURI("http://www.openrdf.org/config/repository/sparql#update-endpoint");
 
 	private String queryEndpointUrl;
 	private String updateEndpointUrl;
 
+	private String host;
+	private int port;
+	private String user;
+	private String password;
+	private String auth;
+
+	public String getHost() {
+		return host;
+	}
+
+	public void setHost(String host) {
+		this.host = host;
+	}
+
+	public int getPort() {
+		return port;
+	}
+
+	public void setPort(int port) {
+		this.port = port;
+	}
+
+	public String getUser() {
+		return user;
+	}
+
+	public void setUser(String user) {
+		this.user = user;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	public String getAuth() {
+		return auth;
+	}
+
+	public void setAuth(String auth) {
+		this.auth = auth;
+	}
 	public MarkLogicRepositoryConfig() {
 		super(MarkLogicRepositoryFactory.REPOSITORY_TYPE);
 	}
