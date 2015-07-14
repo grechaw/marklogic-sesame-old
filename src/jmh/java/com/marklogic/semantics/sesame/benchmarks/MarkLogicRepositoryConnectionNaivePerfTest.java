@@ -2,9 +2,7 @@ package com.marklogic.semantics.sesame.benchmarks;
 
 import com.marklogic.semantics.sesame.MarkLogicRepository;
 import org.openjdk.jmh.annotations.Benchmark;
-import org.openrdf.model.Value;
 import org.openrdf.model.ValueFactory;
-import org.openrdf.query.BindingSet;
 import org.openrdf.query.QueryLanguage;
 import org.openrdf.query.TupleQuery;
 import org.openrdf.query.TupleQueryResult;
@@ -46,20 +44,22 @@ public class MarkLogicRepositoryConnectionNaivePerfTest {
         TupleQuery tupleQuery = conn.prepareTupleQuery(QueryLanguage.SPARQL, queryString);
         TupleQueryResult results = tupleQuery.evaluate();
 
-        results.hasNext();
-        BindingSet bindingSet = results.next();
+        conn.close();
 
-        Value sV = bindingSet.getValue("s");
-        Value pV = bindingSet.getValue("p");
-        Value oV = bindingSet.getValue("o");
-
-        results.hasNext();
-        BindingSet bindingSet1 = results.next();
-
-        Value sV1 = bindingSet1.getValue("s");
-        Value pV1 = bindingSet1.getValue("p");
-        Value oV1 = bindingSet1.getValue("o");
-
+        //rep.shutDown();
+//        results.hasNext();
+//        BindingSet bindingSet = results.next();
+//
+//        Value sV = bindingSet.getValue("s");
+//        Value pV = bindingSet.getValue("p");
+//        Value oV = bindingSet.getValue("o");
+//
+//        results.hasNext();
+//        BindingSet bindingSet1 = results.next();
+//
+//        Value sV1 = bindingSet1.getValue("s");
+//        Value pV1 = bindingSet1.getValue("p");
+//        Value oV1 = bindingSet1.getValue("o");
     }
 
 }

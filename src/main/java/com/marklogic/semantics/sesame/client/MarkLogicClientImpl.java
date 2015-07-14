@@ -108,7 +108,7 @@ public class MarkLogicClientImpl {
     public InputStream performSPARQLQuery(String queryString) throws JsonProcessingException {
         SPARQLQueryManager smgr = getDatabaseClient().newSPARQLQueryManager();
         SPARQLQueryDefinition qdef = smgr.newQueryDefinition(queryString);
-        JacksonHandle results = smgr.executeQuery(qdef, new JacksonHandle());
+        JacksonHandle results = smgr.executeSelect(qdef, new JacksonHandle());
         ObjectMapper objectMapper = new ObjectMapper();
         return new ByteArrayInputStream(objectMapper.writeValueAsBytes(results.get()));
     }

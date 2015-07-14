@@ -52,9 +52,6 @@ public class MarkLogicTupleQuery extends AbstractQuery implements TupleQuery {
     }
 
     public MarkLogicClient getClient() {
-        if (client == null) {
-            client =  new MarkLogicClient();
-        }
         return client;
     }
 

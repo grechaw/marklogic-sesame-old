@@ -1,8 +1,8 @@
-# Marklogic-Sesame Repository
+# Marklogic-Sesame Repository (not released)
 
 MarkLogic-Sesame is a [Sesame](http://rdf4j.org/) Repository implementation that acts as a proxy to MarkLogic semantic capabilities.
 
-com.marklogic:marklogic-sesame-repository
+TBD com.marklogic:marklogic-sesame-repository
 
 ## Introduction
 
@@ -17,8 +17,52 @@ TBD
 TBD
 
 
-## Interim notes
+## Development Notes
 
+### setup
+
+First setup Java API Client
+
+1) clone or download Java API client develop branch
+
+```
+https://github.com/marklogic/java-client-api/tree/develop
+```
+
+2) run the following to build and deploy to local maven repo
+
+```
+ mvn -Dmaven.test.skip=true -Dmaven.javadoc.skip=true deploy
+ ```
+
+Next setup MarkLogic (you will need MarkLogic instance)
+
+1) run gradle target that provisions everything needed in MarkLogic
+
+```
+gradle mlDeploy
+```
+
+Finally, build MarkLogic Sesame Repository
+
+1) clone or download marklogic-sesame develop branch
+
+```
+https://github.com/marklogic/marklogic-sesame/tree/develop
+```
+
+
+2) run gradle target that provisions everything needed in MarkLogic
+
+```
+gradle mlDeploy
+
+3) build MarkLogic Sesame repository
+
+```
+gradle test
+
+```
 
 ### Usage Examples
 
