@@ -39,6 +39,17 @@ You will need MarkLogic instance
 gradle mlDeploy
 ```
 
+alternately you may provision manually (using Documents as your db)
+
+```
+
+curl -v -X PUT --anyauth --user admin:admin --header "Content-Type: application/json" -d'{"collection-lexicon":true,"triple-index":true}' "http://localhost:8002/manage/v2/databases/Documents/properties"
+
+curl -v -X POST --anyauth --user admin:admin --header "Content-Type: application/json" -d@test/resources/setup/rest.json "http://localhost:8002/manage/v2/servers?server-type=http&group-id=Default"
+
+curl --anyauth --user admin:admin -i -X POST -d@test/resources/setup/test.owl -H "Content-type: application/rdf+xml" http://localhost:8200/v1/graphs?graph=my-graph
+```
+
 #### build and test MarkLogic Sesame Repository
 
 1) clone or download marklogic-sesame develop branch
