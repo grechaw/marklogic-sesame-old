@@ -1,19 +1,38 @@
-# Marklogic-Sesame Repository (not released)
+# Marklogic-Sesame Repository (UNRELEASED)
+
+## Introduction (TBD)
 
 MarkLogic-Sesame is a [Sesame](http://rdf4j.org/) Repository implementation that acts as a proxy to MarkLogic semantic capabilities.
 
-TBD com.marklogic:marklogic-sesame-repository
-
-## Introduction (TBD)
 ## QuickStart (TBD)
+
+_IMPORTANT_  NO RELEASE TO MAVEN HAS BEEN MADE YET
+
+To use the API in your maven project, include the following in your pom.xml:
+
+```
+<dependency>
+    <groupId>com.marklogic</groupId>
+    <artifactId>marklogic-sesame-repository</artifactId>
+    <version>1.0.0</version>
+</dependency>
+```
+
+For gradle projects, include the following:
+
+```
+dependencies {
+    compile group: 'com.marklogic', name: 'marklogic-sesame-repository', version: '1.0.0'
+}
+```
+
 ## Support (TBD)
 
+# Development Notes
 
-## Development Notes
+These notes will be purged after initial release.
 
-### architecture/design
-
-### setup
+### Test setup
 
 #### setup Java API Client
 
