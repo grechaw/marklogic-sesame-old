@@ -50,7 +50,7 @@ public abstract class ExampleSesameRepositoryTest {
 
     protected static final String FOAF_NS = "http://xmlns.com/foaf/0.1/";
 
-    public static final String TEST_DIR_PREFIX = "/testcases/";
+    public static final String TEST_DIR_PREFIX = "/testdata/";
 
     protected Repository testRepository;
 

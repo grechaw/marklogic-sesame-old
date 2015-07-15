@@ -4,24 +4,18 @@ MarkLogic-Sesame is a [Sesame](http://rdf4j.org/) Repository implementation that
 
 TBD com.marklogic:marklogic-sesame-repository
 
-## Introduction
-
-TBD
-
-## QuickStart
-
-TBD
-
-## Support
-
-TBD
+## Introduction (TBD)
+## QuickStart (TBD)
+## Support (TBD)
 
 
 ## Development Notes
 
+### architecture/design
+
 ### setup
 
-First setup Java API Client
+#### setup Java API Client
 
 1) clone or download Java API client develop branch
 
@@ -35,7 +29,9 @@ https://github.com/marklogic/java-client-api/tree/develop
  mvn -Dmaven.test.skip=true -Dmaven.javadoc.skip=true deploy
  ```
 
-Next setup MarkLogic (you will need MarkLogic instance)
+#### setup marklogic
+
+You will need MarkLogic instance
 
 1) run gradle target that provisions everything needed in MarkLogic
 
@@ -43,7 +39,7 @@ Next setup MarkLogic (you will need MarkLogic instance)
 gradle mlDeploy
 ```
 
-Finally, build MarkLogic Sesame Repository
+#### build and test MarkLogic Sesame Repository
 
 1) clone or download marklogic-sesame develop branch
 
@@ -51,11 +47,23 @@ Finally, build MarkLogic Sesame Repository
 https://github.com/marklogic/marklogic-sesame/tree/develop
 ```
 
+2) provision everything required for MarkLogic
 
-2) run gradle target that provisions everything needed in MarkLogic
+using gradle
 
 ```
 gradle mlDeploy
+```
+
+or alternately environment maybe provisioned manually (using Documents db) as follows;
+
+```
+curl -v -X PUT --anyauth --user admin:admin --header "Content-Type: application/json" -d'{"collection-lexicon":true,"triple-index":true}' "http://localhost:8002/manage/v2/databases/Documents/properties"
+
+curl -v -X POST --anyauth --user admin:admin --header "Content-Type: application/json" -d@src/test/resources/setup/rest.json "http://localhost:8002/manage/v2/servers?server-type=http&group-id=Default"
+
+curl --anyauth --user admin:admin -i -X POST -d@src/test/resources/setup/test.owl -H "Content-type: application/rdf+xml" http://localhost:8200/v1/graphs?graph=my-graph
+```
 
 3) build MarkLogic Sesame repository
 
@@ -64,7 +72,11 @@ gradle test
 
 ```
 
-### Usage Examples
+will build and run unit tests
+
+
+
+### Examples
 
 query usage
 ```
@@ -140,9 +152,3 @@ get/export statements
 pagination
 ```
 ```
-
-### classes of interest
-
-#### MarkLogicRepository
-
-#### MarkLogicConnectionRepository

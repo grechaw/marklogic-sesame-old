@@ -37,7 +37,7 @@ public class MarkLogicRepositoryTest {
     throws Exception {
 
         // TBD this will pass, so do we want to throw connection error ?
-        Repository rep = new MarkLogicRepository("localhost",8200,"admin", "admin1", "DIGEST");
+        Repository rep = new MarkLogicRepository("localhost",8200,"admin", "admin", "DIGEST");
         rep.initialize();
         rep.shutDown();
 

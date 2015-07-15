@@ -45,8 +45,8 @@ public class MarkLogicRepositoryConnectionTest {
         }
         String host = props.getProperty("mlHost");
         int port = Integer.parseInt(props.getProperty("mlRestPort"));
-        String user = props.getProperty("adminUser");
-        String pass = props.getProperty("adminPassword");
+        String user = props.getProperty("mlAdminUsername");
+        String pass = props.getProperty("mlAdminPassword");
         // extrude to semantics.utils
 
         this.rep = new MarkLogicRepository(host,port,user,pass,"DIGEST");
@@ -93,9 +93,9 @@ public class MarkLogicRepositoryConnectionTest {
         Value pV = bindingSet.getValue("p");
         Value oV = bindingSet.getValue("o");
 
-        Assert.assertEquals("http://example.org/marklogic/people/Jack_Smith", sV.stringValue());
-        Assert.assertEquals("http://example.org/marklogic/predicate/livesIn", pV.stringValue());
-        Assert.assertEquals("Glasgow", oV.stringValue());
+        Assert.assertEquals("http://semanticbible.org/ns/2006/NTNames#AlexandriaGeodata", sV.stringValue());
+        Assert.assertEquals("http://semanticbible.org/ns/2006/NTNames#altitude", pV.stringValue());
+        Assert.assertEquals("0", oV.stringValue());
 
         results.hasNext();
         BindingSet bindingSet1 = results.next();
@@ -104,9 +104,9 @@ public class MarkLogicRepositoryConnectionTest {
         Value pV1 = bindingSet1.getValue("p");
         Value oV1 = bindingSet1.getValue("o");
 
-        Assert.assertEquals("http://example.org/marklogic/people/Jane_Smith", sV1.stringValue());
-        Assert.assertEquals("http://example.org/marklogic/predicate/livesIn", pV1.stringValue());
-        Assert.assertEquals("London", oV1.stringValue());
+        Assert.assertEquals("http://semanticbible.org/ns/2006/NTNames#AmphipolisGeodata", sV1.stringValue());
+        Assert.assertEquals("http://semanticbible.org/ns/2006/NTNames#altitude", pV1.stringValue());
+        Assert.assertEquals("0", oV1.stringValue());
 
     }
 

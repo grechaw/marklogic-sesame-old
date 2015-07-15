@@ -1,5 +1,6 @@
 package com.marklogic.semantics.sesame.client;
 
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.marklogic.client.DatabaseClient;
@@ -50,7 +51,7 @@ public class MarkLogicClientImpl {
         this.databaseClient = DatabaseClientFactory.newClient(host, port, user, password, DatabaseClientFactory.Authentication.valueOf(auth));
     }
 
-    public static DatabaseClientFactory.Authentication getAuthType() {
+    public DatabaseClientFactory.Authentication getAuthType() {
         return authType;
     }
 
@@ -59,7 +60,7 @@ public class MarkLogicClientImpl {
     }
 
     public String getHost() {
-        return host;
+        return this.host;
     }
 
     public void setHost(String host) {
@@ -67,7 +68,7 @@ public class MarkLogicClientImpl {
     }
 
     public int getPort() {
-        return port;
+        return this.port;
     }
 
     public void setPort(int port) {
@@ -75,10 +76,10 @@ public class MarkLogicClientImpl {
     }
 
     public String getUser() {
-        return user;
+        return this.user;
     }
 
-    public void setUser(String user) {
+    public  void setUser(String user) {
         this.user = user;
     }
 
@@ -108,7 +109,8 @@ public class MarkLogicClientImpl {
     public InputStream performSPARQLQuery(String queryString) throws JsonProcessingException {
         SPARQLQueryManager smgr = getDatabaseClient().newSPARQLQueryManager();
         SPARQLQueryDefinition qdef = smgr.newQueryDefinition(queryString);
-        JacksonHandle results = smgr.executeSelect(qdef, new JacksonHandle());
+        JacksonHandle results = smgr.executeSelect(qdef, new JacksonHandle(),start,pageLength
+        );
         ObjectMapper objectMapper = new ObjectMapper();
         return new ByteArrayInputStream(objectMapper.writeValueAsBytes(results.get()));
     }

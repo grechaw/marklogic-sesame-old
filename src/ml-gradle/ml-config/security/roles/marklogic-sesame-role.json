@@ -1,4 +1,0 @@
-{
-  "role-name" : "marklogic-sesame-role",
-  "role" : [ "rest-writer" ]
-}

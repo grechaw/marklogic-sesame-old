@@ -7,7 +7,7 @@ buildscript {
         maven {url "http://rjrudin.github.io/marklogic-java/releases"}
     }
     dependencies {
-        classpath "com.marklogic:ml-gradle:2.0a10"
+        classpath "com.marklogic:ml-gradle:2.0a12"
     }
 }
 
@@ -49,7 +49,12 @@ dependencies {
 
 
 sourceSets {
-    test{}
+    test {
+        java {
+            srcDir 'main/test/java'
+            exclude 'com/marklogic/semantics/sesame/config'
+        }
+    }
 }
 
 jmh {
