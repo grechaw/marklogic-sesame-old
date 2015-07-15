@@ -58,25 +58,7 @@ curl --anyauth --user admin:admin -i -X POST -d@test/resources/setup/test.owl -H
 https://github.com/marklogic/marklogic-sesame/tree/develop
 ```
 
-2) provision everything required for MarkLogic
-
-using gradle
-
-```
-gradle mlDeploy
-```
-
-or alternately environment maybe provisioned manually (using Documents db) as follows;
-
-```
-curl -v -X PUT --anyauth --user admin:admin --header "Content-Type: application/json" -d'{"collection-lexicon":true,"triple-index":true}' "http://localhost:8002/manage/v2/databases/Documents/properties"
-
-curl -v -X POST --anyauth --user admin:admin --header "Content-Type: application/json" -d@src/test/resources/setup/rest.json "http://localhost:8002/manage/v2/servers?server-type=http&group-id=Default"
-
-curl --anyauth --user admin:admin -i -X POST -d@src/test/resources/setup/test.owl -H "Content-type: application/rdf+xml" http://localhost:8200/v1/graphs?graph=my-graph
-```
-
-3) build MarkLogic Sesame repository
+2) build MarkLogic Sesame repository
 
 ```
 gradle test
@@ -84,7 +66,6 @@ gradle test
 ```
 
 will build and run unit tests
-
 
 
 ### Examples
