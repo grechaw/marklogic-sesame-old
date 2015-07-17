@@ -25,7 +25,7 @@ import static org.openrdf.query.QueryLanguage.SPARQL;
 
 public class MarkLogicRepositoryConnection implements RepositoryConnection {
 
-    protected final Logger logger = LoggerFactory.getLogger(this.getClass());
+    protected final Logger logger = LoggerFactory.getLogger(MarkLogicRepositoryConnection.class);
 
     private static final String EVERYTHING = "CONSTRUCT { ?s ?p ?o } WHERE { ?s ?p ?o }";
 
@@ -52,8 +52,8 @@ public class MarkLogicRepositoryConnection implements RepositoryConnection {
     public MarkLogicRepositoryConnection(MarkLogicRepository repository, MarkLogicClient client, boolean quadMode) {
         super();
         this.client = client;
-        this.repository=repository;
-        this.quadMode=quadMode;
+        this.repository = repository;
+        this.quadMode = quadMode;
     }
 
     @Override
@@ -97,7 +97,7 @@ public class MarkLogicRepositoryConnection implements RepositoryConnection {
 
     // prepareTupleQuery
     public TupleQuery prepareTupleQuery(String queryString) throws RepositoryException, MalformedQueryException {
-        return prepareTupleQuery(QueryLanguage.SPARQL,queryString);
+        return prepareTupleQuery(QueryLanguage.SPARQL, queryString);
     }
 
     @Override
@@ -110,7 +110,7 @@ public class MarkLogicRepositoryConnection implements RepositoryConnection {
     @Override
     public TupleQuery prepareTupleQuery(QueryLanguage queryLanguage, String queryString, String baseURI) throws RepositoryException, MalformedQueryException {
         if (QueryLanguage.SPARQL.equals(queryLanguage)) {
-            return new MarkLogicTupleQuery(client,new MapBindingSet(),baseURI,queryString);
+            return new MarkLogicTupleQuery(client, new MapBindingSet(), baseURI, queryString);
         }
         throw new UnsupportedQueryLanguageException("Unsupported query language " + queryLanguage.getName());
     }
@@ -120,6 +120,7 @@ public class MarkLogicRepositoryConnection implements RepositoryConnection {
     public GraphQuery prepareGraphQuery(QueryLanguage ql, String query) throws RepositoryException, MalformedQueryException {
         return null;
     }
+
     @Override
     public GraphQuery prepareGraphQuery(QueryLanguage ql, String query, String baseURI) throws RepositoryException, MalformedQueryException {
         return null;
@@ -130,6 +131,7 @@ public class MarkLogicRepositoryConnection implements RepositoryConnection {
     public BooleanQuery prepareBooleanQuery(QueryLanguage ql, String query) throws RepositoryException, MalformedQueryException {
         return null;
     }
+
     @Override
     public BooleanQuery prepareBooleanQuery(QueryLanguage ql, String query, String baseURI) throws RepositoryException, MalformedQueryException {
         return null;
@@ -140,6 +142,7 @@ public class MarkLogicRepositoryConnection implements RepositoryConnection {
     public Update prepareUpdate(QueryLanguage ql, String update) throws RepositoryException, MalformedQueryException {
         return null;
     }
+
     @Override
     public Update prepareUpdate(QueryLanguage ql, String update, String baseURI) throws RepositoryException, MalformedQueryException {
         return null;
@@ -157,23 +160,19 @@ public class MarkLogicRepositoryConnection implements RepositoryConnection {
 
                                 @Override
                                 protected Resource convert(BindingSet bindings)
-                                        throws QueryEvaluationException
-                                {
-                                    return (Resource)bindings.getValue("_");
+                                        throws QueryEvaluationException {
+                                    return (Resource) bindings.getValue("_");
                                 }
-                            })
-                    {
+                            }) {
 
                         @Override
                         protected RepositoryException convert(Exception e) {
                             return new RepositoryException(e);
                         }
                     });
-        }
-        catch (MalformedQueryException e) {
+        } catch (MalformedQueryException e) {
             throw new RepositoryException(e);
-        }
-        catch (QueryEvaluationException e) {
+        } catch (QueryEvaluationException e) {
             throw new RepositoryException(e);
         }
     }
@@ -201,8 +200,7 @@ public class MarkLogicRepositoryConnection implements RepositoryConnection {
                     CloseableIteration<Statement, RepositoryException> cursor;
                     cursor = new SingletonIteration<Statement, RepositoryException>(st);
                     return new RepositoryResult<Statement>(cursor);
-                }
-                else {
+                } else {
                     return new RepositoryResult<Statement>(new EmptyIteration<Statement, RepositoryException>());
                 }
             }
@@ -217,11 +215,9 @@ public class MarkLogicRepositoryConnection implements RepositoryConnection {
                             return new RepositoryException(e);
                         }
                     });
-        }
-        catch (MalformedQueryException e) {
+        } catch (MalformedQueryException e) {
             throw new RepositoryException(e);
-        }
-        catch (QueryEvaluationException e) {
+        } catch (QueryEvaluationException e) {
             throw new RepositoryException(e);
         }
     }
@@ -231,10 +227,12 @@ public class MarkLogicRepositoryConnection implements RepositoryConnection {
     public boolean hasStatement(Resource subj, URI pred, Value obj, boolean includeInferred, Resource... contexts) throws RepositoryException {
         return false;
     }
+
     @Override
     public boolean hasStatement(Statement st, boolean includeInferred, Resource... contexts) throws RepositoryException {
         return false;
     }
+
     @Override
     public void exportStatements(Resource subj, URI pred, Value obj, boolean includeInferred, RDFHandler handler, Resource... contexts) throws RepositoryException, RDFHandlerException {
 
@@ -371,26 +369,29 @@ public class MarkLogicRepositoryConnection implements RepositoryConnection {
     public RepositoryResult<Namespace> getNamespaces() throws RepositoryException {
         return null;
     }
+
     @Override
     public String getNamespace(String prefix) throws RepositoryException {
         return null;
     }
+
     @Override
     public void setNamespace(String prefix, String name) throws RepositoryException {
 
     }
+
     @Override
     public void removeNamespace(String prefix) throws RepositoryException {
 
     }
+
     @Override
     public void clearNamespaces() throws RepositoryException {
 
     }
 
     private void setBindings(Query query, Resource subj, URI pred, Value obj, Resource... contexts)
-            throws RepositoryException
-    {
+            throws RepositoryException {
         if (subj != null) {
             query.setBinding("s", subj);
         }
@@ -404,9 +405,8 @@ public class MarkLogicRepositoryConnection implements RepositoryConnection {
             DatasetImpl dataset = new DatasetImpl();
             for (Resource ctx : contexts) {
                 if (ctx == null || ctx instanceof URI) {
-                    dataset.addDefaultGraph((URI)ctx);
-                }
-                else {
+                    dataset.addDefaultGraph((URI) ctx);
+                } else {
                     throw new RepositoryException("Contexts must be URIs");
                 }
             }
@@ -425,10 +425,10 @@ public class MarkLogicRepositoryConnection implements RepositoryConnection {
             @Override
             protected Statement convert(BindingSet b) throws QueryEvaluationException {
 
-                Resource s = subj==null ? (Resource)b.getValue("s") : subj;
-                URI p = pred==null ? ValueFactoryImpl.getInstance().createURI(b.getValue("o").stringValue()): pred;
-                Value o = obj==null ? b.getValue("o") : obj;
-                Resource ctx = (Resource)b.getValue("ctx");
+                Resource s = subj == null ? (Resource) b.getValue("s") : subj;
+                URI p = pred == null ? ValueFactoryImpl.getInstance().createURI(b.getValue("o").stringValue()) : pred;
+                Value o = obj == null ? b.getValue("o") : obj;
+                Resource ctx = (Resource) b.getValue("ctx");
 
                 return ValueFactoryImpl.getInstance().createStatement(s, p, o, ctx);
             }

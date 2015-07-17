@@ -25,7 +25,7 @@ public class MarkLogicRepositoryTest {
             throws Exception {
 
         logger.info("setting up repo");
-        Repository rep = new MarkLogicRepository("localhost",8200,"admin","admin","DIGEST");
+        Repository rep = new MarkLogicRepository("localhost", 8200, "admin", "admin", "DIGEST");
         rep.initialize();
 
         Assert.assertTrue(rep instanceof Repository);
@@ -34,10 +34,10 @@ public class MarkLogicRepositoryTest {
 
     @Test
     public void TestRepo2()
-    throws Exception {
+            throws Exception {
 
         // TBD this will pass, so do we want to throw connection error ?
-        Repository rep = new MarkLogicRepository("localhost",8200,"admin", "admin", "DIGEST");
+        Repository rep = new MarkLogicRepository("localhost", 8200, "admin", "admin", "DIGEST");
         rep.initialize();
         rep.shutDown();
 

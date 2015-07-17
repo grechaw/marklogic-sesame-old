@@ -1,4 +1,4 @@
-# Marklogic-Sesame Repository v1.0.0
+# Marklogic-Sesame-Repository v1.0.0
 
 _IMPORTANT_ - NO RELEASE HAS BEEN MADE YET
 

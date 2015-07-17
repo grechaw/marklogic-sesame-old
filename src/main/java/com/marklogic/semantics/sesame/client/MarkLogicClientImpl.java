@@ -17,13 +17,12 @@ import org.slf4j.LoggerFactory;
 import java.io.InputStream;
 
 /**
- * implements client using MarkLogic java api client
  *
  * @author James Fuller
  */
 public class MarkLogicClientImpl {
 
-    protected final Logger logger = LoggerFactory.getLogger(this.getClass());
+    protected final Logger logger = LoggerFactory.getLogger(MarkLogicClientImpl.class);
 
     private String host;
 
@@ -35,9 +34,9 @@ public class MarkLogicClientImpl {
 
     private String auth;
 
-    private long start=1;
-
-    private long pageLength=1000;
+    // tbd
+    private long start = 1;
+    private long pageLength = 1000;
 
     static public SPARQLQueryManager sparqlManager;
 
@@ -79,7 +78,7 @@ public class MarkLogicClientImpl {
         return this.user;
     }
 
-    public  void setUser(String user) {
+    public void setUser(String user) {
         this.user = user;
     }
 
@@ -106,17 +105,17 @@ public class MarkLogicClientImpl {
         return databaseClient;
     }
 
-    public InputStream performSPARQLQuery(String queryString,MapBindingSet bindings) throws JsonProcessingException {
-        return performSPARQLQuery(queryString,bindings, new InputStreamHandle());
+    public InputStream performSPARQLQuery(String queryString, MapBindingSet bindings) throws JsonProcessingException {
+        return performSPARQLQuery(queryString, bindings, new InputStreamHandle());
     }
 
-    public InputStream performSPARQLQuery(String queryString,MapBindingSet bindings, InputStreamHandle handle) throws JsonProcessingException {
+    public InputStream performSPARQLQuery(String queryString, MapBindingSet bindings, InputStreamHandle handle) throws JsonProcessingException {
         sparqlManager = getDatabaseClient().newSPARQLQueryManager();
         SPARQLQueryDefinition qdef = sparqlManager.newQueryDefinition(queryString);
         SPARQLBindings sps = new SPARQLBindingsImpl();
-        for (Binding binding : bindings){
-            sps.bind(binding.getName(),binding.getValue().stringValue());
-            logger.debug("binding:" + binding.getName() +"="+binding.getValue());
+        for (Binding binding : bindings) {
+            sps.bind(binding.getName(), binding.getValue().stringValue());
+            logger.debug("binding:" + binding.getName() + "=" + binding.getValue());
         }
         qdef.setBindings(sps);
         sparqlManager.executeSelect(qdef, handle);

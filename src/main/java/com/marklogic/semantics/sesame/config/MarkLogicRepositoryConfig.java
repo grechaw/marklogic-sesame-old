@@ -12,9 +12,13 @@ import org.openrdf.repository.config.RepositoryImplConfigBase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ *
+ * @author James Fuller
+ */
 public class MarkLogicRepositoryConfig extends RepositoryImplConfigBase {
 
-	protected final Logger logger = LoggerFactory.getLogger(this.getClass());
+	protected final Logger logger = LoggerFactory.getLogger(MarkLogicRepositoryConfig.class);
 
 	public static ValueFactory vf= new ValueFactoryImpl();
 

@@ -17,9 +17,13 @@ import java.nio.charset.Charset;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
+/**
+ *
+ * @author James Fuller
+ */
 public class MarkLogicClient {
 
-	protected final Logger logger = LoggerFactory.getLogger(this.getClass());
+	protected final Logger logger = LoggerFactory.getLogger(MarkLogicClient.class);
 
 	protected static final Charset UTF8 = Charset.forName("UTF-8");
 

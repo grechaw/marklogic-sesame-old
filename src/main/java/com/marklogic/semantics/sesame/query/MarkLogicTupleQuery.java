@@ -11,9 +11,13 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
+/**
+ *
+ * @author James Fuller
+ */
 public class MarkLogicTupleQuery extends AbstractQuery implements TupleQuery {
 
-    protected final Logger logger = LoggerFactory.getLogger(this.getClass());
+    protected final Logger logger = LoggerFactory.getLogger(MarkLogicTupleQuery.class);
 
     private MarkLogicClient client;
 

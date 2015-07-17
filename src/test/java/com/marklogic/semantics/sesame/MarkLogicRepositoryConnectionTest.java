@@ -30,8 +30,7 @@ public class MarkLogicRepositoryConnectionTest {
 
     @Before
     public void setUp()
-            throws Exception
-    {
+            throws Exception {
         logger.debug("setting up test");
 
         // extrude to semantics.utils
@@ -48,7 +47,7 @@ public class MarkLogicRepositoryConnectionTest {
         String pass = props.getProperty("mlAdminPassword");
         // extrude to semantics.utils
 
-        this.rep = new MarkLogicRepository(host,port,user,pass,"DIGEST");
+        this.rep = new MarkLogicRepository(host, port, user, pass, "DIGEST");
         rep.initialize();
 
         f = rep.getValueFactory();
@@ -62,8 +61,7 @@ public class MarkLogicRepositoryConnectionTest {
      */
     @After
     public void tearDown()
-            throws Exception
-    {
+            throws Exception {
         logger.debug("tearing down...");
         conn.close();
         conn = null;
@@ -86,9 +84,9 @@ public class MarkLogicRepositoryConnectionTest {
         TupleQuery tupleQuery = conn.prepareTupleQuery(QueryLanguage.SPARQL, queryString);
         TupleQueryResult results = tupleQuery.evaluate();
 
-        Assert.assertEquals(results.getBindingNames().get(0),"s");
-        Assert.assertEquals(results.getBindingNames().get(1),"p");
-        Assert.assertEquals(results.getBindingNames().get(2),"o");
+        Assert.assertEquals(results.getBindingNames().get(0), "s");
+        Assert.assertEquals(results.getBindingNames().get(1), "p");
+        Assert.assertEquals(results.getBindingNames().get(2), "o");
 
         results.hasNext();
         BindingSet bindingSet = results.next();
@@ -128,14 +126,14 @@ public class MarkLogicRepositoryConnectionTest {
         tupleQuery.evaluate(new TupleQueryResultHandler() {
             @Override
             public void startQueryResult(List<String> bindingNames) {
-                Assert.assertEquals(bindingNames.get(0),"s");
-                Assert.assertEquals(bindingNames.get(1),"p");
-                Assert.assertEquals(bindingNames.get(2),"o");
+                Assert.assertEquals(bindingNames.get(0), "s");
+                Assert.assertEquals(bindingNames.get(1), "p");
+                Assert.assertEquals(bindingNames.get(2), "o");
             }
 
             @Override
             public void handleSolution(BindingSet bindingSet) {
-                Assert.assertEquals(bindingSet.getBinding("o").getValue().stringValue(),"0");
+                Assert.assertEquals(bindingSet.getBinding("o").getValue().stringValue(), "0");
             }
 
             @Override
@@ -179,9 +177,9 @@ public class MarkLogicRepositoryConnectionTest {
 
         TupleQueryResult results = tupleQuery.evaluate();
 
-        Assert.assertEquals(results.getBindingNames().get(0),"s");
-        Assert.assertEquals(results.getBindingNames().get(1),"p");
-        Assert.assertEquals(results.getBindingNames().get(2),"o");
+        Assert.assertEquals(results.getBindingNames().get(0), "s");
+        Assert.assertEquals(results.getBindingNames().get(1), "p");
+        Assert.assertEquals(results.getBindingNames().get(2), "o");
 
         logger.info(results.getBindingNames().toString());
 
@@ -200,22 +198,19 @@ public class MarkLogicRepositoryConnectionTest {
 
     @Ignore
     public void testContextIDs()
-            throws Exception
-    {
+            throws Exception {
 
         RepositoryResult<Statement> result = conn.getStatements(RDF.TYPE, RDF.TYPE, null, true);
         try {
             Assert.assertTrue("result should not be empty", result.hasNext());
-        }
-        finally {
+        } finally {
             result.close();
         }
 
         result = conn.getStatements(RDF.TYPE, RDF.TYPE, null, false);
         try {
             Assert.assertFalse("result should be empty", result.hasNext());
-        }
-        finally {
+        } finally {
             result.close();
         }
     }

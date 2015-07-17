@@ -13,17 +13,17 @@ import java.io.File;
 
 public class MarkLogicRepository extends RepositoryBase implements MarkLogicClientDependent {
 
-    protected final Logger logger = LoggerFactory.getLogger(this.getClass());
+    protected final Logger logger = LoggerFactory.getLogger(MarkLogicRepository.class);
 
     private MarkLogicClient client;
 
     private String host;
 
-    private int port = 8200;
+    private int port;
 
-    private String user = "admin";
+    private String user;
 
-    private String password = "admin";
+    private String password;
 
     private String auth = "DIGEST";
 
@@ -31,17 +31,17 @@ public class MarkLogicRepository extends RepositoryBase implements MarkLogicClie
 
     public MarkLogicRepository() {
         super();
-        this.client =getMarkLogicClient();
+        this.client = getMarkLogicClient();
     }
 
     public MarkLogicRepository(String host, int port, String user, String password, String auth) {
         super();
-        this.host=host;
-        this.port=port;
-        this.user=user;
-        this.password=password;
-        this.auth=auth;
-        this.client =getMarkLogicClient();
+        this.host = host;
+        this.port = port;
+        this.user = user;
+        this.password = password;
+        this.auth = auth;
+        this.client = getMarkLogicClient();
     }
 
 //    public MarkLogicRepository(String endpointUrl) {
@@ -70,12 +70,11 @@ public class MarkLogicRepository extends RepositoryBase implements MarkLogicClie
     }
 
     public RepositoryConnection getConnection()
-            throws RepositoryException
-    {
+            throws RepositoryException {
         if (!isInitialized()) {
             throw new RepositoryException("MarkLogicRepository not initialized.");
         }
-        return new MarkLogicRepositoryConnection(this,client,quadMode);
+        return new MarkLogicRepositoryConnection(this, client, quadMode);
     }
 
     @Override
@@ -86,7 +85,7 @@ public class MarkLogicRepository extends RepositoryBase implements MarkLogicClie
     @Override
     public synchronized MarkLogicClient getMarkLogicClient() {
         if (client == null) {
-            client =  new MarkLogicClient(host,port,user,password,auth); // consider factory method ?
+            client = new MarkLogicClient(host, port, user, password, auth); // consider factory method ?
         }
         return client;
     }
