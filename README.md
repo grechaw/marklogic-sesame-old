@@ -1,12 +1,20 @@
 # Marklogic-Sesame Repository (UNRELEASED)
 
-## Introduction (TBD)
+## Introduction
 
-MarkLogic-Sesame is a [Sesame](http://rdf4j.org/) Repository implementation that acts as a proxy to MarkLogic semantic capabilities.
+MarkLogic-Sesame is a [Sesame](http://rdf4j.org/) Repository implementation that exposes MarkLogic semantic capabilities.
 
-## QuickStart (TBD)
+## QuickStart (draft, for final release version)
 
 _IMPORTANT_  NO RELEASE TO MAVEN HAS BEEN MADE YET
+
+For gradle projects, include the following:
+
+```
+dependencies {
+    compile group: 'com.marklogic', name: 'marklogic-sesame-repository', version: '1.0.0'
+}
+```
 
 To use the API in your maven project, include the following in your pom.xml:
 
@@ -18,41 +26,39 @@ To use the API in your maven project, include the following in your pom.xml:
 </dependency>
 ```
 
-For gradle projects, include the following:
-
-```
-dependencies {
-    compile group: 'com.marklogic', name: 'marklogic-sesame-repository', version: '1.0.0'
-}
-```
-
 ## Support (TBD)
 
 # Development Notes
 
 These notes will be purged after initial release.
 
-### Test setup
+### to Build
+
+_Note: To use this library prior to the release of MarkLogic Server 8.0-4 and Java Client API 3.0.4,
+you must have contacted MarkLogic Product Management for access to an early version of the server._
+
 
 #### setup Java API Client
 
-1) clone or download Java API client develop branch
+1) clone or download Java API client _develop_ branch
 
 ```
 https://github.com/marklogic/java-client-api/tree/develop
 ```
 
-2) run the following to build and deploy to local maven repo
+2) build and deploy Java API client
 
 ```
  mvn -Dmaven.test.skip=true -Dmaven.javadoc.skip=true deploy
  ```
 
+you should verify that Java API client has been deployed to your local maven repo.
+
 #### setup marklogic
 
-You will need MarkLogic instance
+Ensure MarkLogic (Nightly) is installed and running;
 
-1) run gradle target that provisions everything needed in MarkLogic
+1) run gradle target that provisions everything needed for MarkLogic
 
 ```
 gradle mlDeploy
@@ -61,17 +67,19 @@ gradle mlDeploy
 alternately you may provision manually (using Documents as your db)
 
 ```
-
+//setup Documents database
 curl -v -X PUT --anyauth --user admin:admin --header "Content-Type: application/json" -d'{"collection-lexicon":true,"triple-index":true}' "http://localhost:8002/manage/v2/databases/Documents/properties"
 
+//setup server
 curl -v -X POST --anyauth --user admin:admin --header "Content-Type: application/json" -d@test/resources/setup/rest.json "http://localhost:8002/manage/v2/servers?server-type=http&group-id=Default"
 
+//load data triples
 curl --anyauth --user admin:admin -i -X POST -d@test/resources/setup/test.owl -H "Content-type: application/rdf+xml" http://localhost:8200/v1/graphs?graph=my-graph
 ```
 
-#### build and test MarkLogic Sesame Repository
+#### setup  MarkLogic Sesame Repository
 
-1) clone or download marklogic-sesame develop branch
+1) clone or download marklogic-sesame _develop_ branch
 
 ```
 https://github.com/marklogic/marklogic-sesame/tree/develop
@@ -87,9 +95,12 @@ gradle test
 will build and run unit tests
 
 
-### Examples
+### Usage
 
-query usage
+TBD (deploy marklogic-sesame to local maven)
+
+
+#### query examples
 ```
 Repository mr = new MarkLogicRepository();
 
@@ -132,34 +143,34 @@ results.close();
 con.close();
 ```
 
-boolean usage
+#### boolean examples
 ```
 ```
 
-graph usage
+#### graph examples
 ```
 ```
 
-update usage
+#### update examples
 ```
 ```
 
-add/remove triples
+#### add/remove examples
 ```
 ```
 
-get/clear graph
+#### get/clear graph examples
 ```
 ```
 
-transactions
+#### transactions examples
 ```
 ```
 
-get/export statements
+#### get/export statements examples
 ```
 ```
 
-pagination
+#### pagination examples
 ```
 ```

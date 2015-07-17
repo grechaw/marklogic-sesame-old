@@ -44,8 +44,8 @@ public class MarkLogicRepository extends RepositoryBase implements MarkLogicClie
         this.client =getMarkLogicClient();
     }
 
-    public MarkLogicRepository(String endpointUrl) {
-    }
+//    public MarkLogicRepository(String endpointUrl) {
+//    }
 
     @Override
     protected void initializeInternal() throws RepositoryException {

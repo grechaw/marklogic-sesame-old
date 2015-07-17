@@ -7,7 +7,7 @@ buildscript {
         maven {url "http://rjrudin.github.io/marklogic-java/releases"}
     }
     dependencies {
-        classpath "com.marklogic:ml-gradle:2.0a12"
+        classpath "com.marklogic:ml-gradle:2.0a12b"
     }
 }
 
@@ -21,6 +21,10 @@ apply plugin: 'eclipse'
 apply plugin: 'idea'
 apply plugin: 'java'
 
+configure(allprojects){
+            ext.slf4jVersion = '1.7.2'
+            ext.logbackVersion = '1.0.9'
+}
 
 sourceCompatibility = "1.7"
 targetCompatibility = "1.7"
@@ -40,6 +44,9 @@ dependencies {
     compile('org.openrdf.sesame:sesame-runtime:2.8.4')
 
     compile('org.slf4j:slf4j-api:1.7.10')
+    compile "ch.qos.logback:logback-classic:$logbackVersion"
+    compile "org.slf4j:jcl-over-slf4j:$slf4jVersion"
+
     compile('com.marklogic:java-client-api:4.0-SNAPSHOT')
 
     testCompile 'com.jayway.restassured:rest-assured:2.4.1'
@@ -52,7 +59,6 @@ sourceSets {
     test {
         java {
             srcDir 'main/test/java'
-            exclude 'com/marklogic/semantics/sesame/config'
         }
     }
 }

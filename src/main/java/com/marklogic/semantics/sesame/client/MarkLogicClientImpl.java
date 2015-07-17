@@ -2,16 +2,18 @@ package com.marklogic.semantics.sesame.client;
 
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.marklogic.client.DatabaseClient;
 import com.marklogic.client.DatabaseClientFactory;
-import com.marklogic.client.io.JacksonHandle;
+import com.marklogic.client.impl.SPARQLBindingsImpl;
+import com.marklogic.client.io.InputStreamHandle;
+import com.marklogic.client.semantics.SPARQLBindings;
 import com.marklogic.client.semantics.SPARQLQueryDefinition;
 import com.marklogic.client.semantics.SPARQLQueryManager;
+import org.openrdf.query.Binding;
+import org.openrdf.query.impl.MapBindingSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
 /**
@@ -23,29 +25,27 @@ public class MarkLogicClientImpl {
 
     protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private String host = "localhost";
+    private String host;
 
-    private int port = 8200;
+    private int port;
 
-    private String user = "admin";
+    private String user;
 
-    private String password = "admin";
+    private String password;
 
-    private String auth = "DIGEST";
+    private String auth;
 
     private long start=1;
 
     private long pageLength=1000;
+
+    static public SPARQLQueryManager sparqlManager;
 
     protected static DatabaseClientFactory.Authentication authType = DatabaseClientFactory.Authentication.valueOf(
             "DIGEST"
     );
 
     protected DatabaseClient databaseClient;
-
-    public MarkLogicClientImpl() {
-        this.databaseClient = DatabaseClientFactory.newClient(host, port, user, password, authType);
-    }
 
     public MarkLogicClientImpl(String host, int port, String user, String password, String auth) {
         this.databaseClient = DatabaseClientFactory.newClient(host, port, user, password, DatabaseClientFactory.Authentication.valueOf(auth));
@@ -106,12 +106,20 @@ public class MarkLogicClientImpl {
         return databaseClient;
     }
 
-    public InputStream performSPARQLQuery(String queryString) throws JsonProcessingException {
-        SPARQLQueryManager smgr = getDatabaseClient().newSPARQLQueryManager();
-        SPARQLQueryDefinition qdef = smgr.newQueryDefinition(queryString);
-        JacksonHandle results = smgr.executeSelect(qdef, new JacksonHandle(),start,pageLength
-        );
-        ObjectMapper objectMapper = new ObjectMapper();
-        return new ByteArrayInputStream(objectMapper.writeValueAsBytes(results.get()));
+    public InputStream performSPARQLQuery(String queryString,MapBindingSet bindings) throws JsonProcessingException {
+        return performSPARQLQuery(queryString,bindings, new InputStreamHandle());
+    }
+
+    public InputStream performSPARQLQuery(String queryString,MapBindingSet bindings, InputStreamHandle handle) throws JsonProcessingException {
+        sparqlManager = getDatabaseClient().newSPARQLQueryManager();
+        SPARQLQueryDefinition qdef = sparqlManager.newQueryDefinition(queryString);
+        SPARQLBindings sps = new SPARQLBindingsImpl();
+        for (Binding binding : bindings){
+            sps.bind(binding.getName(),binding.getValue().stringValue());
+            logger.debug("binding:" + binding.getName() +"="+binding.getValue());
+        }
+        qdef.setBindings(sps);
+        sparqlManager.executeSelect(qdef, handle);
+        return handle.get();
     }
 }

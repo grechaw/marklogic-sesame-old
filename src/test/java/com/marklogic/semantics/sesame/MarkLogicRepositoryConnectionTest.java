@@ -4,11 +4,9 @@ import org.junit.*;
 import org.openrdf.model.Statement;
 import org.openrdf.model.Value;
 import org.openrdf.model.ValueFactory;
+import org.openrdf.model.impl.ValueFactoryImpl;
 import org.openrdf.model.vocabulary.RDF;
-import org.openrdf.query.BindingSet;
-import org.openrdf.query.QueryLanguage;
-import org.openrdf.query.TupleQuery;
-import org.openrdf.query.TupleQueryResult;
+import org.openrdf.query.*;
 import org.openrdf.repository.Repository;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryResult;
@@ -17,6 +15,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.List;
 import java.util.Properties;
 
 public class MarkLogicRepositoryConnectionTest {
@@ -55,7 +54,7 @@ public class MarkLogicRepositoryConnectionTest {
         f = rep.getValueFactory();
         conn = rep.getConnection();
 
-        logger.debug("test setup complete.");
+        logger.info("test setup complete.");
     }
 
     /**
@@ -72,8 +71,9 @@ public class MarkLogicRepositoryConnectionTest {
         rep.shutDown();
         rep = null;
 
-        logger.debug("tearDown complete.");
+        logger.info("tearDown complete.");
     }
+
     @Test
     public void testSPARQLQuery()
             throws Exception {
@@ -85,6 +85,10 @@ public class MarkLogicRepositoryConnectionTest {
         String queryString = "select ?s ?p ?o { ?s ?p ?o } limit 2 ";
         TupleQuery tupleQuery = conn.prepareTupleQuery(QueryLanguage.SPARQL, queryString);
         TupleQueryResult results = tupleQuery.evaluate();
+
+        Assert.assertEquals(results.getBindingNames().get(0),"s");
+        Assert.assertEquals(results.getBindingNames().get(1),"p");
+        Assert.assertEquals(results.getBindingNames().get(2),"o");
 
         results.hasNext();
         BindingSet bindingSet = results.next();
@@ -110,16 +114,96 @@ public class MarkLogicRepositoryConnectionTest {
 
     }
 
+    @Test
+    public void testSPARQLQueryWithResultsHandler()
+            throws Exception {
+
+        rep.shutDown();
+        rep.initialize();
+
+        Assert.assertTrue(conn != null);
+        String queryString = "select ?s ?p ?o { ?s ?p ?o } limit 10";
+        TupleQuery tupleQuery = conn.prepareTupleQuery(QueryLanguage.SPARQL, queryString);
+
+        tupleQuery.evaluate(new TupleQueryResultHandler() {
+            @Override
+            public void startQueryResult(List<String> bindingNames) {
+                Assert.assertEquals(bindingNames.get(0),"s");
+                Assert.assertEquals(bindingNames.get(1),"p");
+                Assert.assertEquals(bindingNames.get(2),"o");
+            }
+
+            @Override
+            public void handleSolution(BindingSet bindingSet) {
+                Assert.assertEquals(bindingSet.getBinding("o").getValue().stringValue(),"0");
+            }
+
+            @Override
+            public void endQueryResult() {
+            }
+
+            @Override
+            public void handleBoolean(boolean arg0)
+                    throws QueryResultHandlerException {
+            }
+
+            @Override
+            public void handleLinks(List<String> arg0)
+                    throws QueryResultHandlerException {
+            }
+        });
+        tupleQuery.evaluate();
+
+    }
+
+    @Test
+    public void testSPARQLQueryBindings()
+            throws Exception {
+
+        rep.shutDown();
+        rep.initialize();
+
+        Assert.assertTrue(conn != null);
+        String queryString = "select ?s ?p ?o { ?s ?p ?o . filter (?s = ?b) filter (?p = ?c) }";
+        TupleQuery tupleQuery = conn.prepareTupleQuery(QueryLanguage.SPARQL, queryString);
+
+        tupleQuery.setBinding("b", ValueFactoryImpl.getInstance().createURI("http://semanticbible.org/ns/2006/NTNames#Jim"));
+        tupleQuery.setBinding("c", ValueFactoryImpl.getInstance().createURI("http://semanticbible.org/ns/2006/NTNames#parentOf"));
+
+        tupleQuery.removeBinding("c");
+
+        tupleQuery.clearBindings();
+
+        tupleQuery.setBinding("b", ValueFactoryImpl.getInstance().createURI("http://semanticbible.org/ns/2006/NTNames#Jotham"));
+        tupleQuery.setBinding("c", ValueFactoryImpl.getInstance().createURI("http://semanticbible.org/ns/2006/NTNames#parentOf"));
+
+        TupleQueryResult results = tupleQuery.evaluate();
+
+        Assert.assertEquals(results.getBindingNames().get(0),"s");
+        Assert.assertEquals(results.getBindingNames().get(1),"p");
+        Assert.assertEquals(results.getBindingNames().get(2),"o");
+
+        logger.info(results.getBindingNames().toString());
+
+        results.hasNext();
+        BindingSet bindingSet = results.next();
+
+        Value sV = bindingSet.getValue("s");
+        Value pV = bindingSet.getValue("p");
+        Value oV = bindingSet.getValue("o");
+
+        Assert.assertEquals("http://semanticbible.org/ns/2006/NTNames#Jotham", sV.stringValue());
+        Assert.assertEquals("http://semanticbible.org/ns/2006/NTNames#parentOf", pV.stringValue());
+        Assert.assertEquals("http://semanticbible.org/ns/2006/NTNames#Ahaz", oV.stringValue());
+
+    }
 
     @Ignore
     public void testContextIDs()
             throws Exception
     {
 
-        MarkLogicRepository mr = new MarkLogicRepository();
-        mr.initialize();
-        MarkLogicRepositoryConnection con = (MarkLogicRepositoryConnection) mr.getConnection();
-        RepositoryResult<Statement> result = con.getStatements(RDF.TYPE, RDF.TYPE, null, true);
+        RepositoryResult<Statement> result = conn.getStatements(RDF.TYPE, RDF.TYPE, null, true);
         try {
             Assert.assertTrue("result should not be empty", result.hasNext());
         }
@@ -127,7 +211,7 @@ public class MarkLogicRepositoryConnectionTest {
             result.close();
         }
 
-        result = con.getStatements(RDF.TYPE, RDF.TYPE, null, false);
+        result = conn.getStatements(RDF.TYPE, RDF.TYPE, null, false);
         try {
             Assert.assertFalse("result should be empty", result.hasNext());
         }

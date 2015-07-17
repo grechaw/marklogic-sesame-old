@@ -1,8 +1,10 @@
 package com.marklogic.semantics.sesame.client;
 
+import org.openrdf.http.client.BackgroundTupleResult;
 import org.openrdf.model.ValueFactory;
 import org.openrdf.model.impl.ValueFactoryImpl;
 import org.openrdf.query.TupleQueryResult;
+import org.openrdf.query.impl.MapBindingSet;
 import org.openrdf.query.resultio.QueryResultIO;
 import org.openrdf.query.resultio.TupleQueryResultFormat;
 import org.openrdf.query.resultio.TupleQueryResultParser;
@@ -17,7 +19,6 @@ import java.util.concurrent.Executors;
 
 public class MarkLogicClient {
 
-
 	protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	protected static final Charset UTF8 = Charset.forName("UTF-8");
@@ -26,18 +27,12 @@ public class MarkLogicClient {
 
 	private static Executor executor = Executors.newCachedThreadPool();
 
-	private MarkLogicClientImpl mcimpl;
+	private MarkLogicClientImpl _client;
 
 	private ValueFactory f;
 
-	public MarkLogicClient() {
-		this.mcimpl = new MarkLogicClientImpl();
-		this.f = new ValueFactoryImpl();
-	}
-
-
 	public MarkLogicClient(String host, int port, String user, String password,String auth) {
-		this.mcimpl = new MarkLogicClientImpl(host,port,user,password,auth);
+		this._client = new MarkLogicClientImpl(host,port,user,password,auth);
 		this.f = new ValueFactoryImpl();
 	}
 
@@ -45,10 +40,13 @@ public class MarkLogicClient {
 		return f;
 	}
 
-	public TupleQueryResult sendTupleQuery(String queryString) throws IOException {
-		InputStream stream = mcimpl.performSPARQLQuery(queryString);
+    public TupleQueryResult sendTupleQuery(String queryString) throws IOException {
+        return sendTupleQuery(queryString,new MapBindingSet());
+    }
+	public TupleQueryResult sendTupleQuery(String queryString,MapBindingSet bindings) throws IOException {
+		InputStream stream = _client.performSPARQLQuery(queryString,bindings);
 		TupleQueryResultParser parser = QueryResultIO.createParser(format, getValueFactory());
-		MarkLogicTupleResult tRes = new MarkLogicTupleResult(parser,stream);
+		BackgroundTupleResult tRes = new BackgroundTupleResult(parser,stream);
 		execute(tRes);
 		return tRes;
 	}
