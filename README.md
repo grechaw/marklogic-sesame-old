@@ -1,12 +1,14 @@
-# Marklogic-Sesame Repository (UNRELEASED)
+# Marklogic-Sesame Repository v1.0.0
+
+_IMPORTANT_ - NO RELEASE HAS BEEN MADE YET
 
 ## Introduction
 
 MarkLogic-Sesame is a [Sesame](http://rdf4j.org/) Repository implementation that exposes MarkLogic semantic capabilities.
 
-## QuickStart (draft, for final release version)
+## Quick Start (draft, for final release version)
 
-_IMPORTANT_  NO RELEASE TO MAVEN HAS BEEN MADE YET
+_IMPORTANT_ - NO RELEASE TO MAVEN HAS BEEN MADE YET
 
 For gradle projects, include the following:
 
@@ -26,19 +28,19 @@ To use the API in your maven project, include the following in your pom.xml:
 </dependency>
 ```
 
-## Support (TBD)
+## Support (draft, for final release version)
 
 # Development Notes
 
 These notes will be purged after initial release.
 
-### to Build
+### Building and Testing
 
 _Note: To use this library prior to the release of MarkLogic Server 8.0-4 and Java Client API 3.0.4,
 you must have contacted MarkLogic Product Management for access to an early version of the server._
 
 
-#### setup Java API Client
+#### Setup Java API Client
 
 1) clone or download Java API client _develop_ branch
 
@@ -54,7 +56,7 @@ https://github.com/marklogic/java-client-api/tree/develop
 
 you should verify that Java API client has been deployed to your local maven repo.
 
-#### setup marklogic
+#### Setup Marklogic
 
 Ensure MarkLogic (Nightly) is installed and running;
 
@@ -64,7 +66,7 @@ Ensure MarkLogic (Nightly) is installed and running;
 gradle mlDeploy
 ```
 
-alternately you may provision manually (using Documents as your db)
+alternately you may provision manually
 
 ```
 //setup Documents database
@@ -77,7 +79,7 @@ curl -v -X POST --anyauth --user admin:admin --header "Content-Type: application
 curl --anyauth --user admin:admin -i -X POST -d@test/resources/setup/test.owl -H "Content-type: application/rdf+xml" http://localhost:8200/v1/graphs?graph=my-graph
 ```
 
-#### setup  MarkLogic Sesame Repository
+#### Setup  MarkLogic Sesame Repository
 
 1) clone or download marklogic-sesame _develop_ branch
 
@@ -92,12 +94,21 @@ gradle test
 
 ```
 
-will build and run unit tests
+will build and run unit tests.
 
 
 ### Usage
 
-TBD (deploy marklogic-sesame to local maven)
+To use in your own code, deploy into local maven repo or copy snapshot jars from /build directory.
+
+```
+gradle deploy
+
+```
+
+The following examples demonstrate idiomatic Sesame usage of the MarkLogic Sesame Repository.
+
+(TBD - provide /samples dir)
 
 
 #### query examples
