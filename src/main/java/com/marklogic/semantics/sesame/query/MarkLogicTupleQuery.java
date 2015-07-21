@@ -64,16 +64,22 @@ public class MarkLogicTupleQuery extends AbstractQuery implements TupleQuery {
     }
 
     //evaluate
+
+    //pagination overload
     @Override
-    public TupleQueryResult evaluate()
+    public TupleQueryResult evaluate() throws QueryEvaluationException {
+        return evaluate(-1,-1);
+    }
+    public TupleQueryResult evaluate(long start, long pageLength)
             throws QueryEvaluationException {
         MarkLogicClient mc = getClient();
         try {
-            return mc.sendTupleQuery(getQueryString(),mapBindingSet);
+            return mc.sendTupleQuery(getQueryString(),mapBindingSet,start,pageLength);
         } catch (IOException e) {
             throw new QueryEvaluationException(e);
         }
     }
+
     @Override
     public void evaluate(TupleQueryResultHandler resultHandler) throws QueryEvaluationException, TupleQueryResultHandlerException {
         TupleQueryResult queryResult = evaluate();

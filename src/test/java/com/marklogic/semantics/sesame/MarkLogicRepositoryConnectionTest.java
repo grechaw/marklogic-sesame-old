@@ -1,5 +1,6 @@
 package com.marklogic.semantics.sesame;
 
+import com.marklogic.semantics.sesame.query.MarkLogicTupleQuery;
 import org.junit.*;
 import org.openrdf.model.Statement;
 import org.openrdf.model.Value;
@@ -90,7 +91,6 @@ public class MarkLogicRepositoryConnectionTest {
         Assert.assertEquals(results.getBindingNames().get(1), "p");
         Assert.assertEquals(results.getBindingNames().get(2), "o");
 
-        results.hasNext();
         BindingSet bindingSet = results.next();
 
         Value sV = bindingSet.getValue("s");
@@ -101,7 +101,6 @@ public class MarkLogicRepositoryConnectionTest {
         Assert.assertEquals("http://semanticbible.org/ns/2006/NTNames#altitude", pV.stringValue());
         Assert.assertEquals("0", oV.stringValue());
 
-        results.hasNext();
         BindingSet bindingSet1 = results.next();
 
         Value sV1 = bindingSet1.getValue("s");
@@ -112,6 +111,34 @@ public class MarkLogicRepositoryConnectionTest {
         Assert.assertEquals("http://semanticbible.org/ns/2006/NTNames#altitude", pV1.stringValue());
         Assert.assertEquals("0", oV1.stringValue());
 
+    }
+
+    @Test
+    public void testSPARQLQueryWithPagination()
+            throws Exception {
+
+        rep.shutDown();
+        rep.initialize();
+
+        String queryString = "select ?s ?p ?o { ?s ?p ?o } limit 100 ";
+        MarkLogicTupleQuery tupleQuery = (MarkLogicTupleQuery) conn.prepareTupleQuery(QueryLanguage.SPARQL, queryString);
+        TupleQueryResult results = tupleQuery.evaluate(3,1);
+
+        Assert.assertEquals(results.getBindingNames().get(0), "s");
+        Assert.assertEquals(results.getBindingNames().get(1), "p");
+        Assert.assertEquals(results.getBindingNames().get(2), "o");
+
+        BindingSet bindingSet = results.next();
+
+        Value sV = bindingSet.getValue("s");
+        Value pV = bindingSet.getValue("p");
+        Value oV = bindingSet.getValue("o");
+
+        Assert.assertEquals("http://semanticbible.org/ns/2006/NTNames#AntiochGeodata", sV.stringValue());
+        Assert.assertEquals("http://semanticbible.org/ns/2006/NTNames#altitude", pV.stringValue());
+        Assert.assertEquals("0", oV.stringValue());
+
+        Assert.assertFalse(results.hasNext());
     }
 
     @Test

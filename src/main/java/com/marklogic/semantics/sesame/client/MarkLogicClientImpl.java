@@ -34,10 +34,6 @@ public class MarkLogicClientImpl {
 
     private String auth;
 
-    // tbd
-    private long start = 1;
-    private long pageLength = 1000;
-
     static public SPARQLQueryManager sparqlManager;
 
     protected static DatabaseClientFactory.Authentication authType = DatabaseClientFactory.Authentication.valueOf(
@@ -106,14 +102,18 @@ public class MarkLogicClientImpl {
     }
 
     public InputStream performSPARQLQuery(String queryString, MapBindingSet bindings) throws JsonProcessingException {
-        return performSPARQLQuery(queryString, bindings, new InputStreamHandle());
+        return performSPARQLQuery(queryString, bindings, new InputStreamHandle(),-1,-1);
     }
 
-    public InputStream performSPARQLQuery(String queryString, MapBindingSet bindings, InputStreamHandle handle) throws JsonProcessingException {
+
+    public InputStream performSPARQLQuery(String queryString, MapBindingSet bindings, long start, long pageLength) throws JsonProcessingException {
+        return performSPARQLQuery(queryString, bindings, new InputStreamHandle(),start,pageLength);
+    }
+    public InputStream performSPARQLQuery(String queryString, MapBindingSet bindings, InputStreamHandle handle, long start, long pageLength) throws JsonProcessingException {
         sparqlManager = getDatabaseClient().newSPARQLQueryManager();
         SPARQLQueryDefinition qdef = sparqlManager.newQueryDefinition(queryString);
         qdef.setBindings(getSPARQLBindings(bindings));
-        sparqlManager.executeSelect(qdef, handle, -1, -1, null);
+        sparqlManager.executeSelect(qdef, handle, start, pageLength, null);
         return handle.get();
     }
 

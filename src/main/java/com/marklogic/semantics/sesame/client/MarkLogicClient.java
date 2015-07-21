@@ -58,10 +58,13 @@ public class MarkLogicClient {
 
 	//tuple query
     public TupleQueryResult sendTupleQuery(String queryString) throws IOException {
-        return sendTupleQuery(queryString,new MapBindingSet());
+        return sendTupleQuery(queryString,new MapBindingSet(),-1,-1);
     }
 	public TupleQueryResult sendTupleQuery(String queryString,MapBindingSet bindings) throws IOException {
-		InputStream stream = _client.performSPARQLQuery(queryString,bindings);
+		return sendTupleQuery(queryString,bindings,-1,-1);
+	}
+	public TupleQueryResult sendTupleQuery(String queryString,MapBindingSet bindings, long start, long pageLength) throws IOException {
+		InputStream stream = _client.performSPARQLQuery(queryString,bindings,start,pageLength);
 		TupleQueryResultParser parser = QueryResultIO.createParser(format, getValueFactory());
 		BackgroundTupleResult tRes = new BackgroundTupleResult(parser,stream);
 		execute(tRes);
