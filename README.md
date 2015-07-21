@@ -32,7 +32,12 @@ To use the API in your maven project, include the following in your pom.xml:
 
 # Development Notes
 
-These notes will be purged after initial release.
+IMPORTANT- These notes will be purged after initial release.
+
+Latest _develop_ branch Javadocs and test results are accessible here
+
+[http://xquery.github.io/marklogic-sesame/](http://xquery.github.io/marklogic-sesame/)
+
 
 ### Building and Testing
 
