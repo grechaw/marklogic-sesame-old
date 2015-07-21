@@ -57,14 +57,8 @@ public class MarkLogicClient {
 	}
 
 	//tuple query
-    public TupleQueryResult sendTupleQuery(String queryString) throws IOException {
-        return sendTupleQuery(queryString,new MapBindingSet(),-1,-1);
-    }
-	public TupleQueryResult sendTupleQuery(String queryString,MapBindingSet bindings) throws IOException {
-		return sendTupleQuery(queryString,bindings,-1,-1);
-	}
 	public TupleQueryResult sendTupleQuery(String queryString,MapBindingSet bindings, long start, long pageLength) throws IOException {
-		InputStream stream = _client.performSPARQLQuery(queryString,bindings,start,pageLength);
+		InputStream stream = _client.performSPARQLQuery(queryString,bindings,start,pageLength,null);
 		TupleQueryResultParser parser = QueryResultIO.createParser(format, getValueFactory());
 		BackgroundTupleResult tRes = new BackgroundTupleResult(parser,stream);
 		execute(tRes);
@@ -72,11 +66,8 @@ public class MarkLogicClient {
 	}
 
 	//graph query
-	public GraphQueryResult sendGraphQuery(String queryString) throws IOException {
-		return sendGraphQuery(queryString, new MapBindingSet());
-	}
 	public GraphQueryResult sendGraphQuery(String queryString,MapBindingSet bindings) throws IOException {
-		InputStream stream = _client.performGraphQuery(queryString, bindings);
+		InputStream stream = _client.performGraphQuery(queryString, bindings,null);
 
 		Set<RDFFormat> rdfFormats = RDFParserRegistry.getInstance().getKeys();
 		if (rdfFormats.isEmpty()) {
@@ -97,19 +88,13 @@ public class MarkLogicClient {
 	}
 
 	//boolean query
-	public boolean sendBooleanQuery(String queryString) throws IOException {
-		return sendBooleanQuery(queryString, new MapBindingSet());
-	}
 	public boolean sendBooleanQuery(String queryString,MapBindingSet bindings) {
-		return _client.performBooleanQuery(queryString, bindings);
+		return _client.performBooleanQuery(queryString, bindings,null);
 	}
 
 	//update query
-	public void sendUpdateQuery(String queryString) throws IOException {
-		sendBooleanQuery(queryString, new MapBindingSet());
-	}
 	public void sendUpdateQuery(String queryString,MapBindingSet bindings) {
-		_client.performUpdateQuery(queryString, bindings);
+		_client.performUpdateQuery(queryString, bindings,null);
 	}
 
 	public ParserConfig getParserConfig() {

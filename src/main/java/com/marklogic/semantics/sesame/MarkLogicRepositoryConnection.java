@@ -1,10 +1,7 @@
 package com.marklogic.semantics.sesame;
 
 import com.marklogic.semantics.sesame.client.MarkLogicClient;
-import com.marklogic.semantics.sesame.query.MarkLogicBooleanQuery;
-import com.marklogic.semantics.sesame.query.MarkLogicGraphQuery;
-import com.marklogic.semantics.sesame.query.MarkLogicTupleQuery;
-import com.marklogic.semantics.sesame.query.MarkLogicUpdateQuery;
+import com.marklogic.semantics.sesame.query.*;
 import info.aduna.iteration.*;
 import org.openrdf.IsolationLevel;
 import org.openrdf.model.*;
@@ -313,7 +310,16 @@ public class MarkLogicRepositoryConnection implements RepositoryConnection {
 
     @Override
     public void begin() throws RepositoryException {
-
+        synchronized (transactionLock) {
+            if (!isActive()) {
+                synchronized (transactionLock) {
+                    sparqlTransaction = new StringBuffer();
+                }
+            }
+            else {
+                throw new RepositoryException("active transaction already exists");
+            }
+        }
     }
 
     @Override
@@ -323,12 +329,39 @@ public class MarkLogicRepositoryConnection implements RepositoryConnection {
 
     @Override
     public void commit() throws RepositoryException {
+        synchronized (transactionLock) {
+            if (isActive()) {
+                synchronized (transactionLock) {
+                    MarkLogicUpdate transaction = new MarkLogicUpdate(client, null,
+                            sparqlTransaction.toString());
+                    try {
+                        transaction.execute();
+                    }
+                    catch (UpdateExecutionException e) {
+                        throw new RepositoryException("error executing transaction", e);
+                    }
 
+                    sparqlTransaction = null;
+                }
+            }
+            else {
+                throw new RepositoryException("no transaction active.");
+            }
+        }
     }
 
     @Override
     public void rollback() throws RepositoryException {
-
+        synchronized (transactionLock) {
+            if (isActive()) {
+                synchronized (transactionLock) {
+                    sparqlTransaction = null;
+                }
+            }
+            else {
+                throw new RepositoryException("no transaction active.");
+            }
+        }
     }
 
     @Override

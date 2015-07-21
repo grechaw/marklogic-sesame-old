@@ -64,8 +64,6 @@ public class MarkLogicTupleQuery extends AbstractQuery implements TupleQuery {
     }
 
     //evaluate
-
-    //pagination overload
     @Override
     public TupleQueryResult evaluate() throws QueryEvaluationException {
         return evaluate(-1,-1);

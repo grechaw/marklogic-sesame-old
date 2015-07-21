@@ -12,9 +12,11 @@ import org.openrdf.repository.Repository;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.RepositoryResult;
+import org.openrdf.rio.RDFFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.List;
@@ -103,8 +105,9 @@ public class MarkLogicRepositoryConnectionTest {
         rep.initialize();
         Assert.assertTrue("Expected repository to be initialized.", rep.isInitialized());
         rep.shutDown();
+        Assert.assertFalse("Expected repository to not be initialized.", rep.isInitialized());
         rep.initialize();
-        Assert.assertTrue(conn != null);
+        Assert.assertNotNull("Expected repository to exist.", rep);
     }
 
     @Test
@@ -359,6 +362,36 @@ public class MarkLogicRepositoryConnectionTest {
         Assert.assertEquals(true, results);
     }
 
+    @Ignore
+    public void testTransactions() throws Exception{
+        File inputFile1 = new File("src/test/resources/testdata/default-graph-1.ttl");
+        String baseURI1 = "http://example.org/example1/";
+
+        File inputFile2 = new File("src/test/resources/testdata/default-graph-2.ttl");
+        String baseURI2 = "http://example.org/example2/";
+
+        try {
+            conn.begin();
+
+            // Add the first file
+            conn.add(inputFile1, baseURI1, RDFFormat.TURTLE);
+
+            // Add the second file
+            conn.add(inputFile2, baseURI2, RDFFormat.TURTLE);
+
+            // If everything went as planned, we can commit the result
+            conn.commit();
+        }
+        catch (RepositoryException e) {
+            // Something went wrong during the transaction, so we roll it back
+            conn.rollback();
+        }
+        finally {
+            // Whatever happens, we want to close the connection when we are done.
+            conn.close();
+        }
+
+    }
     @Ignore
     public void testContextIDs()
             throws Exception {
