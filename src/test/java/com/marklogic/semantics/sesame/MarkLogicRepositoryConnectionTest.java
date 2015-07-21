@@ -48,6 +48,8 @@ public class MarkLogicRepositoryConnectionTest {
         // extrude to semantics.utils
 
         this.rep = new MarkLogicRepository(host, port, user, pass, "DIGEST");
+
+
         rep.initialize();
 
         f = rep.getValueFactory();
@@ -194,6 +196,110 @@ public class MarkLogicRepositoryConnectionTest {
         Assert.assertEquals("http://semanticbible.org/ns/2006/NTNames#parentOf", pV.stringValue());
         Assert.assertEquals("http://semanticbible.org/ns/2006/NTNames#Ahaz", oV.stringValue());
 
+    }
+
+    //negative test by supplying CONSTRUCT query to TupleQuery
+    @Ignore
+    public void negativeTestSPARQLQuery()
+            throws Exception {
+
+        rep.shutDown();
+        rep.initialize();
+
+        Assert.assertTrue(conn != null);
+        String queryString = "PREFIX nn: <http://semanticbible.org/ns/2006/NTNames#>\n" +
+                "PREFIX test: <http://marklogic.com#test>\n" +
+                "\n" +
+                "construct { ?s  test:test \"0\"} where  {?s nn:childOf nn:Eve . }";
+        TupleQuery tupleQuery = conn.prepareTupleQuery(QueryLanguage.SPARQL, queryString);
+        TupleQueryResult results = tupleQuery.evaluate();
+
+        Assert.assertEquals(results.getBindingNames().get(0), "s");
+        Assert.assertEquals(results.getBindingNames().get(1), "p");
+        Assert.assertEquals(results.getBindingNames().get(2), "o");
+    }
+    @Test
+    public void testConstructQuery()
+            throws Exception {
+
+        rep.shutDown();
+        rep.initialize();
+
+        Assert.assertTrue(conn != null);
+        String queryString = "PREFIX nn: <http://semanticbible.org/ns/2006/NTNames#>\n" +
+                "PREFIX test: <http://marklogic.com#test>\n" +
+                "\n" +
+                "construct { ?s  test:test \"0\"} where  {?s nn:childOf nn:Eve . }";
+        GraphQuery graphQuery = conn.prepareGraphQuery(QueryLanguage.SPARQL, queryString);
+        GraphQueryResult results = graphQuery.evaluate();
+        Statement st1 = results.next();
+        Assert.assertEquals("http://semanticbible.org/ns/2006/NTNames#Abel",st1.getSubject().stringValue());
+        Statement st2 = results.next();
+        Assert.assertEquals("http://semanticbible.org/ns/2006/NTNames#Cain", st2.getSubject().stringValue());
+    }
+    @Test
+    public void testDescribeQuery()
+            throws Exception {
+
+        rep.shutDown();
+        rep.initialize();
+
+        Assert.assertTrue(conn != null);
+        String queryString = "DESCRIBE <http://semanticbible.org/ns/2006/NTNames#Shelah>";
+        GraphQuery graphQuery = conn.prepareGraphQuery(QueryLanguage.SPARQL, queryString);
+        GraphQueryResult results = graphQuery.evaluate();
+        Statement st1 = results.next();
+        Assert.assertEquals("http://semanticbible.org/ns/2006/NTNames#Shelah",st1.getSubject().stringValue());
+        Assert.assertEquals("http://semanticbible.org/ns/2006/NTNames#childOf",st1.getPredicate().stringValue());
+        Assert.assertEquals("http://semanticbible.org/ns/2006/NTNames#CainanSonOfArphaxad",st1.getObject().stringValue());
+    }
+    @Ignore
+    public void negativeTestDescribeQuery1()
+            throws Exception {
+
+        rep.shutDown();
+        rep.initialize();
+
+        Assert.assertTrue(conn != null);
+        String queryString = "ASK { <http://semanticbible.org/ns/2006/NTNames#Shelah1> ?p ?o}";
+        GraphQuery graphQuery = conn.prepareGraphQuery(QueryLanguage.SPARQL, queryString);
+        GraphQueryResult results = graphQuery.evaluate();
+        Statement st1 = results.next();
+        Assert.assertEquals("http://semanticbible.org/ns/2006/NTNames#Shelah",st1.getSubject().stringValue());
+        Assert.assertEquals("http://semanticbible.org/ns/2006/NTNames#childOf",st1.getPredicate().stringValue());
+        Assert.assertEquals("http://semanticbible.org/ns/2006/NTNames#CainanSonOfArphaxad",st1.getObject().stringValue());
+    }
+    @Test
+    public void testBooleanQuery()
+            throws Exception {
+
+        rep.shutDown();
+        rep.initialize();
+        Assert.assertTrue(conn != null);
+
+        String queryString = "ASK { <http://semanticbible.org/ns/2006/NTNames#Shelah1> ?p ?o}";
+        BooleanQuery booleanQuery = conn.prepareBooleanQuery(QueryLanguage.SPARQL, queryString);
+        boolean results = booleanQuery.evaluate();
+        Assert.assertEquals(false,results);
+        queryString = "ASK { <http://semanticbible.org/ns/2006/NTNames#Shelah> ?p ?o}";
+        booleanQuery = conn.prepareBooleanQuery(QueryLanguage.SPARQL, queryString);
+        results = booleanQuery.evaluate();
+        Assert.assertEquals(true,results);
+    }
+    @Test
+    public void testUpdateQuery()
+            throws Exception {
+
+        rep.shutDown();
+        rep.initialize();
+        Assert.assertTrue(conn != null);
+        String defGraphQuery = "INSERT DATA { GRAPH <g27> { <http://marklogic.com/test> <pp1> <oo1> } }";
+        String checkQuery = "ASK WHERE { <http://marklogic.com/test> <pp1> <oo1> }";
+        Update updateQuery = conn.prepareUpdate(QueryLanguage.SPARQL, defGraphQuery);
+        updateQuery.execute();
+        BooleanQuery booleanQuery = conn.prepareBooleanQuery(QueryLanguage.SPARQL, checkQuery);
+        boolean results = booleanQuery.evaluate();
+        Assert.assertEquals(true, results);
     }
 
     @Ignore

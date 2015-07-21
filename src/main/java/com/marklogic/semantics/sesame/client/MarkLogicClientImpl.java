@@ -112,13 +112,43 @@ public class MarkLogicClientImpl {
     public InputStream performSPARQLQuery(String queryString, MapBindingSet bindings, InputStreamHandle handle) throws JsonProcessingException {
         sparqlManager = getDatabaseClient().newSPARQLQueryManager();
         SPARQLQueryDefinition qdef = sparqlManager.newQueryDefinition(queryString);
+        qdef.setBindings(getSPARQLBindings(bindings));
+        sparqlManager.executeSelect(qdef, handle, -1, -1, null);
+        return handle.get();
+    }
+
+    public InputStream performGraphQuery(String queryString, MapBindingSet bindings) throws JsonProcessingException {
+        return performGraphQuery(queryString, bindings, new InputStreamHandle());
+    }
+    public InputStream performGraphQuery(String queryString, MapBindingSet bindings, InputStreamHandle handle) throws JsonProcessingException {
+        sparqlManager = getDatabaseClient().newSPARQLQueryManager();
+
+        SPARQLQueryDefinition qdef = sparqlManager.newQueryDefinition(queryString);
+        qdef.setBindings(getSPARQLBindings(bindings));
+        sparqlManager.executeDescribe(qdef, handle, null);
+        return handle.get();
+    }
+
+    public boolean performBooleanQuery(String queryString, MapBindingSet bindings) {
+        sparqlManager = getDatabaseClient().newSPARQLQueryManager();
+        SPARQLQueryDefinition qdef = sparqlManager.newQueryDefinition(queryString);
+        qdef.setBindings(getSPARQLBindings(bindings));
+        return sparqlManager.executeAsk(qdef, null);
+    }
+
+    public void performUpdateQuery(String queryString, MapBindingSet bindings) {
+        sparqlManager = getDatabaseClient().newSPARQLQueryManager();
+        SPARQLQueryDefinition qdef = sparqlManager.newQueryDefinition(queryString);
+        qdef.setBindings(getSPARQLBindings(bindings));
+        sparqlManager.executeUpdate(qdef, null);
+    }
+
+    protected SPARQLBindings getSPARQLBindings(MapBindingSet bindings){
         SPARQLBindings sps = new SPARQLBindingsImpl();
         for (Binding binding : bindings) {
             sps.bind(binding.getName(), binding.getValue().stringValue());
             logger.debug("binding:" + binding.getName() + "=" + binding.getValue());
         }
-        qdef.setBindings(sps);
-        sparqlManager.executeSelect(qdef, handle);
-        return handle.get();
+        return sps;
     }
 }

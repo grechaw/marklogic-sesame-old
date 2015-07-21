@@ -73,10 +73,22 @@ alternately you may provision manually
 curl -v -X PUT --anyauth --user admin:admin --header "Content-Type: application/json" -d'{"collection-lexicon":true,"triple-index":true}' "http://localhost:8002/manage/v2/databases/Documents/properties"
 
 //setup server
-curl -v -X POST --anyauth --user admin:admin --header "Content-Type: application/json" -d@test/resources/setup/rest.json "http://localhost:8002/manage/v2/servers?server-type=http&group-id=Default"
+curl -v -X POST --anyauth --user admin:admin --header "Content-Type: application/json" -d@src/test/resources/setup/rest.json "http://localhost:8002/manage/v2/servers?server-type=http&group-id=Default"
 
+```
+
+2) load test data
+
+```
+gradle loadTestData
+```
+
+(note- this gradle task requires Curl to be installed and available on your system's PATH)
+
+alternately you may load manually
+```
 //load data triples
-curl --anyauth --user admin:admin -i -X POST -d@test/resources/setup/test.owl -H "Content-type: application/rdf+xml" http://localhost:8200/v1/graphs?graph=my-graph
+curl --anyauth --user admin:admin -i -X POST -d@src/test/resources/setup/test.owl -H "Content-type: application/rdf+xml" http://localhost:8200/v1/graphs?graph=my-graph
 ```
 
 #### Setup  MarkLogic Sesame Repository
