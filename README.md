@@ -77,11 +77,13 @@ curl -v -X POST --anyauth --user admin:admin --header "Content-Type: application
 
 ```
 
-2) load test data
+2) manually load test data
 
 ```
 gradle loadTestData
 ```
+
+to run tests you do not have to run this task as it is run automatically before testing.
 
 (note- this gradle task requires Curl to be installed and available on your system's PATH)
 

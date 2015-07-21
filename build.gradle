@@ -66,19 +66,25 @@ task wrapper(type: Wrapper) {
     gradleVersion = '2.4'
 }
 
-task(loadTestData) {
+task removeTestData <<{
     exec{
         commandLine 'curl --anyauth --user admin:admin -i -X DELETE http://localhost:8200/v1/graphs?graph=my-graph'.tokenize()
     }
     exec {
         commandLine 'curl --anyauth --user admin:admin -i -X DELETE http://localhost:8200/v1/graphs?graph=g27'.tokenize()
     }
+}
+
+task loadTestData << {
     exec {
         commandLine 'curl --anyauth --user admin:admin -i -X POST -H Content-type:application/rdf+xml -d@src/test/resources/setup/test.owl http://localhost:8200/v1/graphs?graph=my-graph'.tokenize()
     }
 }
 
 test.dependsOn([loadTestData])
+
+clean.dependsOn([removeTestData])
+
 jmh {
     //include = 'some regular expression' // include pattern (regular expression) for benchmarks to be executed
     //exclude = 'some regular expression' // exclude pattern (regular expression) for benchmarks to be executed
