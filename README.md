@@ -98,7 +98,7 @@ alternately you may load manually
 curl --anyauth --user admin:admin -i -X POST -d@src/test/resources/setup/test.owl -H "Content-type: application/rdf+xml" http://localhost:8200/v1/graphs?graph=my-graph
 ```
 
-#### Setup  MarkLogic Sesame Repository
+#### Setup and Test MarkLogic Sesame Repository
 
 1) clone or download marklogic-sesame _develop_ branch
 
@@ -106,7 +106,7 @@ curl --anyauth --user admin:admin -i -X POST -d@src/test/resources/setup/test.ow
 https://github.com/marklogic/marklogic-sesame/tree/develop
 ```
 
-2) build MarkLogic Sesame repository
+2) test MarkLogic Sesame repository
 
 ```
 gradle test
@@ -139,33 +139,16 @@ mr.initialize();
 
 RepositoryConnection con = mr.getConnection();
 
-Assert.assertTrue( con != null );
 String queryString = "select ?s ?p ?o { ?s ?p ?o } limit 2 ";
 TupleQuery tupleQuery =  con.prepareTupleQuery(QueryLanguage.SPARQL, queryString);
 TupleQueryResult results = tupleQuery.evaluate();
 
 try {
-results.hasNext();
+while(results.hasNext()){;
 BindingSet bindingSet = results.next();
-
 Value sV = bindingSet.getValue("s");
 Value pV = bindingSet.getValue("p");
 Value oV = bindingSet.getValue("o");
-
-Assert.assertEquals("http://example.org/marklogic/people/Jack_Smith",sV.stringValue());
-Assert.assertEquals("http://example.org/marklogic/predicate/livesIn",pV.stringValue());
-Assert.assertEquals("Glasgow", oV.stringValue());
-
-results.hasNext();
-BindingSet bindingSet1 = results.next();
-
-Value sV1 = bindingSet1.getValue("s");
-Value pV1 = bindingSet1.getValue("p");
-Value oV1 = bindingSet1.getValue("o");
-
-Assert.assertEquals("http://example.org/marklogic/people/Jane_Smith",sV1.stringValue());
-Assert.assertEquals("http://example.org/marklogic/predicate/livesIn",pV1.stringValue());
-Assert.assertEquals("London", oV1.stringValue());
 }
 finally {
 results.close();
@@ -173,16 +156,160 @@ results.close();
 con.close();
 ```
 
+```
+Repository mr = new MarkLogicRepository();
+mr.shutDown();
+mr.initialize();
+RepositoryConnection con = mr.getConnection();
+
+String queryString = "select ?s ?p ?o { ?s ?p ?o } limit 10";
+TupleQuery tupleQuery = conn.prepareTupleQuery(QueryLanguage.SPARQL, queryString);
+
+tupleQuery.evaluate(new TupleQueryResultHandler() {
+    @Override
+    public void startQueryResult(List<String> bindingNames) {
+        System.out.println(bindingNames.get(0)); // subject
+        System.out.println(bindingNames.get(1)); // predicate
+        System.out.println(bindingNames.get(2)); // object
+    }
+
+    @Override
+    public void handleSolution(BindingSet bindingSet) {
+        Assert.assertEquals(bindingSet.getBinding("o").getValue().stringValue(), "0");
+    }
+
+    @Override
+    public void endQueryResult() {
+    }
+
+    @Override
+    public void handleBoolean(boolean arg0)
+            throws QueryResultHandlerException {
+    }
+
+    @Override
+    public void handleLinks(List<String> arg0)
+            throws QueryResultHandlerException {
+    }
+});
+tupleQuery.evaluate();
+```
+
+example with bindings;
+
+```
+Repository mr = new MarkLogicRepository();
+mr.shutDown();
+mr.initialize();
+RepositoryConnection con = mr.getConnection();
+
+String queryString = "select ?s ?p ?o { ?s ?p ?o . filter (?s = ?b) filter (?p = ?c) }";
+TupleQuery tupleQuery = conn.prepareTupleQuery(QueryLanguage.SPARQL, queryString);
+
+tupleQuery.setBinding("b", ValueFactoryImpl.getInstance().createURI("http://semanticbible.org/ns/2006/NTNames#Jim"));
+tupleQuery.setBinding("c", ValueFactoryImpl.getInstance().createURI("http://semanticbible.org/ns/2006/NTNames#parentOf"));
+
+tupleQuery.removeBinding("c");
+
+tupleQuery.clearBindings();
+
+tupleQuery.setBinding("b", ValueFactoryImpl.getInstance().createURI("http://semanticbible.org/ns/2006/NTNames#Jotham"));
+tupleQuery.setBinding("c", ValueFactoryImpl.getInstance().createURI("http://semanticbible.org/ns/2006/NTNames#parentOf"));
+
+TupleQueryResult results = tupleQuery.evaluate();
+
+Assert.assertEquals(results.getBindingNames().get(0), "s");
+Assert.assertEquals(results.getBindingNames().get(1), "p");
+Assert.assertEquals(results.getBindingNames().get(2), "o");
+
+logger.info(results.getBindingNames().toString());
+
+results.hasNext();
+BindingSet bindingSet = results.next();
+
+Value sV = bindingSet.getValue("s");
+Value pV = bindingSet.getValue("p");
+Value oV = bindingSet.getValue("o");
+
+Assert.assertEquals("http://semanticbible.org/ns/2006/NTNames#Jotham", sV.stringValue());
+Assert.assertEquals("http://semanticbible.org/ns/2006/NTNames#parentOf", pV.stringValue());
+Assert.assertEquals("http://semanticbible.org/ns/2006/NTNames#Ahaz", oV.stringValue());
+```
+
 #### boolean examples
 ```
+Repository mr = new MarkLogicRepository();
+mr.shutDown();
+mr.initialize();
+RepositoryConnection con = mr.getConnection();
+
+String queryString = "ASK { <http://semanticbible.org/ns/2006/NTNames#Shelah1> ?p ?o}";
+BooleanQuery booleanQuery = conn.prepareBooleanQuery(QueryLanguage.SPARQL, queryString);
+boolean results = booleanQuery.evaluate();
+Assert.assertEquals(false,results); // should fail
+queryString = "ASK { <http://semanticbible.org/ns/2006/NTNames#Shelah> ?p ?o}";
+booleanQuery = conn.prepareBooleanQuery(QueryLanguage.SPARQL, queryString);
+results = booleanQuery.evaluate(); // should be true
+Assert.assertEquals(true,results);
 ```
 
 #### graph examples
+
+CONSTRUCT example;
 ```
+Repository mr = new MarkLogicRepository();
+mr.shutDown();
+mr.initialize();
+RepositoryConnection con = mr.getConnection();
+
+String queryString = "PREFIX nn: <http://semanticbible.org/ns/2006/NTNames#>\n" +
+        "PREFIX test: <http://marklogic.com#test>\n" +
+        "\n" +
+        "construct { ?s  test:test \"0\"} where  {?s nn:childOf nn:Eve . }";
+GraphQuery graphQuery = conn.prepareGraphQuery(QueryLanguage.SPARQL, queryString);
+GraphQueryResult results = graphQuery.evaluate();
+Statement st1 = results.next();
+Assert.assertEquals("http://semanticbible.org/ns/2006/NTNames#Abel",st1.getSubject().stringValue());
+Statement st2 = results.next();
+Assert.assertEquals("http://semanticbible.org/ns/2006/NTNames#Cain", st2.getSubject().stringValue());
+```
+
+DESCRIBE example;
+```
+Repository mr = new MarkLogicRepository();
+mr.shutDown();
+mr.initialize();
+RepositoryConnection con = mr.getConnection();
+
+String queryString = "DESCRIBE <http://semanticbible.org/ns/2006/NTNames#Shelah>";
+GraphQuery graphQuery = conn.prepareGraphQuery(QueryLanguage.SPARQL, queryString);
+GraphQueryResult results = graphQuery.evaluate();
+Statement st1 = results.next();
+Assert.assertEquals("http://semanticbible.org/ns/2006/NTNames#Shelah",st1.getSubject().stringValue());
+Assert.assertEquals("http://semanticbible.org/ns/2006/NTNames#childOf",st1.getPredicate().stringValue());
+Assert.assertEquals("http://semanticbible.org/ns/2006/NTNames#CainanSonOfArphaxad",st1.getObject().stringValue());
+
 ```
 
 #### update examples
+
+INSERT update example
 ```
+Repository mr = new MarkLogicRepository();
+mr.shutDown();
+mr.initialize();
+RepositoryConnection con = mr.getConnection();
+
+// INSERT
+String defGraphQuery = "INSERT DATA { GRAPH <g27> { <http://marklogic.com/test> <pp1> <oo1> } }";
+String checkQuery = "ASK WHERE { <http://marklogic.com/test> <pp1> <oo1> }";
+Update updateQuery = conn.prepareUpdate(QueryLanguage.SPARQL, defGraphQuery);
+updateQuery.execute();
+
+//check if the update worked
+BooleanQuery booleanQuery = conn.prepareBooleanQuery(QueryLanguage.SPARQL, checkQuery);
+boolean results = booleanQuery.evaluate();
+Assert.assertEquals(true, results);
 ```
 
 #### add/remove examples
