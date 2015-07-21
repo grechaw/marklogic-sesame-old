@@ -13,6 +13,7 @@ import org.openrdf.model.impl.ValueFactoryImpl;
 import org.openrdf.query.*;
 import org.openrdf.query.impl.DatasetImpl;
 import org.openrdf.query.impl.MapBindingSet;
+import org.openrdf.query.parser.QueryParserUtil;
 import org.openrdf.repository.*;
 import org.openrdf.rio.*;
 import org.slf4j.Logger;
@@ -49,7 +50,7 @@ public class MarkLogicRepositoryConnection implements RepositoryConnection {
     private MarkLogicRepository repository;
 
 //    public MarkLogicRepositoryConnection(MarkLogicRepository repository,MarkLogicClient client) {
-//        this(repository, client, false);
+//        this(repository, new MarkLogicClient(),false);
 //    }
 
     public MarkLogicRepositoryConnection(MarkLogicRepository repository, MarkLogicClient client, boolean quadMode) {
@@ -91,16 +92,30 @@ public class MarkLogicRepositoryConnection implements RepositoryConnection {
     public void close() throws RepositoryException {
     }
 
-    @Override
-    public Query prepareQuery(QueryLanguage ql, String query) throws RepositoryException, MalformedQueryException {
-        return null;
-    }
-
     // prepareQuery entrypoint
     @Override
-    public Query prepareQuery(QueryLanguage ql, String query, String baseURI) throws RepositoryException, MalformedQueryException {
-        return null;
+    public Query prepareQuery(QueryLanguage queryLanguage, String queryString) throws RepositoryException, MalformedQueryException {
+        return prepareTupleQuery(queryLanguage, queryString, "");
     }
+    @Override
+    public Query prepareQuery(QueryLanguage queryLanguage, String queryString, String baseURI)
+            throws RepositoryException, MalformedQueryException
+    {
+        if (SPARQL.equals(queryLanguage)) {
+            String strippedQuery = QueryParserUtil.removeSPARQLQueryProlog(queryString).toUpperCase();
+            if (strippedQuery.startsWith("SELECT")) {
+                return prepareTupleQuery(queryLanguage, queryString, baseURI);
+            }
+            else if (strippedQuery.startsWith("ASK")) {
+                return prepareBooleanQuery(queryLanguage, queryString, baseURI);
+            }
+            else {
+                return prepareGraphQuery(queryLanguage, queryString, baseURI);
+            }
+        }
+        throw new UnsupportedOperationException("Unsupported query language " + queryLanguage.getName());
+    }
+
 
     // prepareTupleQuery
     public TupleQuery prepareTupleQuery(String queryString) throws RepositoryException, MalformedQueryException {

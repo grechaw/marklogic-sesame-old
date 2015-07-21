@@ -10,6 +10,7 @@ import org.openrdf.model.vocabulary.RDF;
 import org.openrdf.query.*;
 import org.openrdf.repository.Repository;
 import org.openrdf.repository.RepositoryConnection;
+import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.RepositoryResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,14 +76,57 @@ public class MarkLogicRepositoryConnectionTest {
         logger.info("tearDown complete.");
     }
 
+
+    @Test
+    public void testMarkLogicRepositoryConnection()
+            throws Exception {
+
+        Assert.assertNotNull("Expected repository to exist.", rep);
+        Assert.assertTrue("Expected repository to be initialized.", rep.isInitialized());
+        rep.shutDown();
+        Properties props = new Properties();
+        try {
+            props.load(new FileInputStream("gradle.properties"));
+        } catch (IOException e) {
+            System.err.println("problem loading properties file.");
+            System.exit(1);
+        }
+        String host = props.getProperty("mlHost");
+        int port = Integer.parseInt(props.getProperty("mlRestPort"));
+        String user = props.getProperty("mlAdminUsername");
+        String pass = props.getProperty("mlAdminPassword");
+
+        rep = new MarkLogicRepository(host, port, user, pass, "DIGEST");
+
+        Assert.assertNotNull("Expected repository to exist.", rep);
+        rep.initialize();
+        Assert.assertTrue("Expected repository to be initialized.", rep.isInitialized());
+        rep.shutDown();
+        rep.initialize();
+        Assert.assertTrue(conn != null);
+    }
+
+    @Test
+    public void testSPARQLQueryWithPrepareQuery()
+            throws Exception {
+
+        String queryString = "select ?s ?p ?o { ?s ?p ?o } limit 1 ";
+        Query q = conn.prepareQuery(QueryLanguage.SPARQL, queryString);
+
+        if (q instanceof TupleQuery) {
+            TupleQueryResult result = ((TupleQuery)q).evaluate();
+            while (result.hasNext()) {
+                BindingSet tuple = result.next();
+                Assert.assertEquals("s",tuple.getBinding("s").getName());
+                Assert.assertEquals("http://semanticbible.org/ns/2006/NTNames#AlexandriaGeodata",tuple.getBinding("s").getValue().stringValue());
+            }
+        }
+    }
+
     @Test
     public void testSPARQLQuery()
             throws Exception {
 
-        rep.shutDown();
-        rep.initialize();
-
-        Assert.assertTrue(conn != null);
         String queryString = "select ?s ?p ?o { ?s ?p ?o } limit 2 ";
         TupleQuery tupleQuery = conn.prepareTupleQuery(QueryLanguage.SPARQL, queryString);
         TupleQueryResult results = tupleQuery.evaluate();
@@ -110,19 +154,17 @@ public class MarkLogicRepositoryConnectionTest {
         Assert.assertEquals("http://semanticbible.org/ns/2006/NTNames#AmphipolisGeodata", sV1.stringValue());
         Assert.assertEquals("http://semanticbible.org/ns/2006/NTNames#altitude", pV1.stringValue());
         Assert.assertEquals("0", oV1.stringValue());
+        conn.close();
+        rep.shutDown();
 
     }
 
     @Test
     public void testSPARQLQueryWithPagination()
             throws Exception {
-
-        rep.shutDown();
-        rep.initialize();
-
         String queryString = "select ?s ?p ?o { ?s ?p ?o } limit 100 ";
         MarkLogicTupleQuery tupleQuery = (MarkLogicTupleQuery) conn.prepareTupleQuery(QueryLanguage.SPARQL, queryString);
-        TupleQueryResult results = tupleQuery.evaluate(3,1);
+        TupleQueryResult results = tupleQuery.evaluate(3, 1);
 
         Assert.assertEquals(results.getBindingNames().get(0), "s");
         Assert.assertEquals(results.getBindingNames().get(1), "p");
@@ -144,11 +186,6 @@ public class MarkLogicRepositoryConnectionTest {
     @Test
     public void testSPARQLQueryWithResultsHandler()
             throws Exception {
-
-        rep.shutDown();
-        rep.initialize();
-
-        Assert.assertTrue(conn != null);
         String queryString = "select ?s ?p ?o { ?s ?p ?o } limit 10";
         TupleQuery tupleQuery = conn.prepareTupleQuery(QueryLanguage.SPARQL, queryString);
 
@@ -187,10 +224,6 @@ public class MarkLogicRepositoryConnectionTest {
     public void testSPARQLQueryBindings()
             throws Exception {
 
-        rep.shutDown();
-        rep.initialize();
-
-        Assert.assertTrue(conn != null);
         String queryString = "select ?s ?p ?o { ?s ?p ?o . filter (?s = ?b) filter (?p = ?c) }";
         TupleQuery tupleQuery = conn.prepareTupleQuery(QueryLanguage.SPARQL, queryString);
 
@@ -225,15 +258,35 @@ public class MarkLogicRepositoryConnectionTest {
 
     }
 
+    @Ignore
+    public void incrementallyBuildQueryTest() throws MalformedQueryException, RepositoryException {
+
+        TupleQuery tupleQuery = conn.prepareTupleQuery(QueryLanguage.SPARQL, "");
+
+//        StringBuffer sb = new StringBuffer();
+//        sb.append("SELECT ?g ?s ?p ?o where {GRAPH ?g { ?s ?p ?o }");
+//        if (s != Node) {
+//            tupleQuery.setBinding("a", s.getURI());
+//            sb.append("FILTER (?s = ?a) ");
+//        }
+//        if (p != Node.ANY) {
+//            tupleQuery.setBinding("b", p.getURI());
+//            sb.append("FILTER (?p = ?b) ");
+//        }
+//        if (o != Node.ANY) {
+//            tupleQuery.setBinding("c",o);
+//            sb.append("FILTER (?o = ?c) ");
+//        }
+//        sb.append("}");
+//
+//        qdef.setSparql(sb.toString());
+
+    }
+
     //negative test by supplying CONSTRUCT query to TupleQuery
     @Ignore
     public void negativeTestSPARQLQuery()
             throws Exception {
-
-        rep.shutDown();
-        rep.initialize();
-
-        Assert.assertTrue(conn != null);
         String queryString = "PREFIX nn: <http://semanticbible.org/ns/2006/NTNames#>\n" +
                 "PREFIX test: <http://marklogic.com#test>\n" +
                 "\n" +
@@ -248,11 +301,6 @@ public class MarkLogicRepositoryConnectionTest {
     @Test
     public void testConstructQuery()
             throws Exception {
-
-        rep.shutDown();
-        rep.initialize();
-
-        Assert.assertTrue(conn != null);
         String queryString = "PREFIX nn: <http://semanticbible.org/ns/2006/NTNames#>\n" +
                 "PREFIX test: <http://marklogic.com#test>\n" +
                 "\n" +
@@ -267,11 +315,6 @@ public class MarkLogicRepositoryConnectionTest {
     @Test
     public void testDescribeQuery()
             throws Exception {
-
-        rep.shutDown();
-        rep.initialize();
-
-        Assert.assertTrue(conn != null);
         String queryString = "DESCRIBE <http://semanticbible.org/ns/2006/NTNames#Shelah>";
         GraphQuery graphQuery = conn.prepareGraphQuery(QueryLanguage.SPARQL, queryString);
         GraphQueryResult results = graphQuery.evaluate();
@@ -283,11 +326,6 @@ public class MarkLogicRepositoryConnectionTest {
     @Ignore
     public void negativeTestDescribeQuery1()
             throws Exception {
-
-        rep.shutDown();
-        rep.initialize();
-
-        Assert.assertTrue(conn != null);
         String queryString = "ASK { <http://semanticbible.org/ns/2006/NTNames#Shelah1> ?p ?o}";
         GraphQuery graphQuery = conn.prepareGraphQuery(QueryLanguage.SPARQL, queryString);
         GraphQueryResult results = graphQuery.evaluate();
@@ -299,11 +337,6 @@ public class MarkLogicRepositoryConnectionTest {
     @Test
     public void testBooleanQuery()
             throws Exception {
-
-        rep.shutDown();
-        rep.initialize();
-        Assert.assertTrue(conn != null);
-
         String queryString = "ASK { <http://semanticbible.org/ns/2006/NTNames#Shelah1> ?p ?o}";
         BooleanQuery booleanQuery = conn.prepareBooleanQuery(QueryLanguage.SPARQL, queryString);
         boolean results = booleanQuery.evaluate();
@@ -316,10 +349,6 @@ public class MarkLogicRepositoryConnectionTest {
     @Test
     public void testUpdateQuery()
             throws Exception {
-
-        rep.shutDown();
-        rep.initialize();
-        Assert.assertTrue(conn != null);
         String defGraphQuery = "INSERT DATA { GRAPH <g27> { <http://marklogic.com/test> <pp1> <oo1> } }";
         String checkQuery = "ASK WHERE { <http://marklogic.com/test> <pp1> <oo1> }";
         Update updateQuery = conn.prepareUpdate(QueryLanguage.SPARQL, defGraphQuery);
@@ -347,6 +376,5 @@ public class MarkLogicRepositoryConnectionTest {
             result.close();
         }
     }
-
 
 }
