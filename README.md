@@ -131,6 +131,8 @@ The following examples demonstrate idiomatic Sesame usage of the MarkLogic Sesam
 
 
 #### query examples
+
+using tupleQuery.evalute();
 ```
 Repository mr = new MarkLogicRepository();
 
@@ -156,6 +158,7 @@ results.close();
 con.close();
 ```
 
+using tupleQuery.evaluate(new TupleQueryResultHandler());
 ```
 Repository mr = new MarkLogicRepository();
 mr.shutDown();
@@ -196,7 +199,6 @@ tupleQuery.evaluate();
 ```
 
 example with bindings;
-
 ```
 Repository mr = new MarkLogicRepository();
 mr.shutDown();
@@ -217,26 +219,11 @@ tupleQuery.setBinding("b", ValueFactoryImpl.getInstance().createURI("http://sema
 tupleQuery.setBinding("c", ValueFactoryImpl.getInstance().createURI("http://semanticbible.org/ns/2006/NTNames#parentOf"));
 
 TupleQueryResult results = tupleQuery.evaluate();
-
-Assert.assertEquals(results.getBindingNames().get(0), "s");
-Assert.assertEquals(results.getBindingNames().get(1), "p");
-Assert.assertEquals(results.getBindingNames().get(2), "o");
-
-logger.info(results.getBindingNames().toString());
-
-results.hasNext();
-BindingSet bindingSet = results.next();
-
-Value sV = bindingSet.getValue("s");
-Value pV = bindingSet.getValue("p");
-Value oV = bindingSet.getValue("o");
-
-Assert.assertEquals("http://semanticbible.org/ns/2006/NTNames#Jotham", sV.stringValue());
-Assert.assertEquals("http://semanticbible.org/ns/2006/NTNames#parentOf", pV.stringValue());
-Assert.assertEquals("http://semanticbible.org/ns/2006/NTNames#Ahaz", oV.stringValue());
 ```
 
 #### boolean examples
+
+simple boolean example;
 ```
 Repository mr = new MarkLogicRepository();
 mr.shutDown();
@@ -293,7 +280,7 @@ Assert.assertEquals("http://semanticbible.org/ns/2006/NTNames#CainanSonOfArphaxa
 
 #### update examples
 
-INSERT update example
+INSERT update example;
 ```
 Repository mr = new MarkLogicRepository();
 mr.shutDown();
