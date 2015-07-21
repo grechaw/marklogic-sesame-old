@@ -99,6 +99,7 @@ public class MarkLogicRepositoryConnectionTest {
         rep = new MarkLogicRepository(host, port, user, pass, "DIGEST");
 
         Assert.assertNotNull("Expected repository to exist.", rep);
+        Assert.assertFalse("Expected repository to not be initialized.", rep.isInitialized());
         rep.initialize();
         Assert.assertTrue("Expected repository to be initialized.", rep.isInitialized());
         rep.shutDown();

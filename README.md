@@ -198,6 +198,21 @@ tupleQuery.evaluate(new TupleQueryResultHandler() {
 tupleQuery.evaluate();
 ```
 
+using prepareQuery;
+```
+String queryString = "select ?s ?p ?o { ?s ?p ?o } limit 1 ";
+Query q = conn.prepareQuery(QueryLanguage.SPARQL, queryString);
+
+if (q instanceof TupleQuery) {
+    TupleQueryResult result = ((TupleQuery)q).evaluate();
+    while (result.hasNext()) {
+        BindingSet tuple = result.next();
+        Assert.assertEquals("s",tuple.getBinding("s").getName());
+        Assert.assertEquals("http://semanticbible.org/ns/2006/NTNames#AlexandriaGeodata",tuple.getBinding("s").getValue().stringValue());
+    }
+}
+```
+
 example with bindings;
 ```
 Repository mr = new MarkLogicRepository();
