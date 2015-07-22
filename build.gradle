@@ -68,16 +68,16 @@ task wrapper(type: Wrapper) {
 
 task removeTestData <<{
     exec{
-        commandLine 'curl --anyauth --user admin:admin -i -X DELETE http://localhost:8200/v1/graphs?graph=my-graph'.tokenize()
+        commandLine 'curl --anyauth --user admin:admin -i -X DELETE http://localhost:8200/v1/graphs?graph=http://marklogic.com/test/my-graph'.tokenize()
     }
     exec {
-        commandLine 'curl --anyauth --user admin:admin -i -X DELETE http://localhost:8200/v1/graphs?graph=g27'.tokenize()
+        commandLine 'curl --anyauth --user admin:admin -i -X DELETE http://localhost:8200/v1/graphs?graph=http://marklogic.com/test/g27'.tokenize()
     }
 }
 
 task loadTestData << {
     exec {
-        commandLine 'curl --anyauth --user admin:admin -i -X POST -H Content-type:application/rdf+xml -d@src/test/resources/setup/test.owl http://localhost:8200/v1/graphs?graph=my-graph'.tokenize()
+        commandLine 'curl --anyauth --user admin:admin -i -X POST -H Content-type:application/rdf+xml -d@src/test/resources/setup/test.owl http://localhost:8200/v1/graphs?graph=http://marklogic.com/test/my-graph'.tokenize()
     }
 }
 

@@ -38,7 +38,7 @@ public class MarkLogicRepositoryConnection implements RepositoryConnection {
 
     private StringBuffer sparqlTransaction;
 
-    private Object transactionLock = new Object();
+    private final Object transactionLock = new Object();
 
     private final boolean quadMode;
 
@@ -180,30 +180,35 @@ public class MarkLogicRepositoryConnection implements RepositoryConnection {
     //
     @Override
     public RepositoryResult<Resource> getContextIDs() throws RepositoryException {
-        try {
-            TupleQuery query = prepareTupleQuery(SPARQL, NAMEDGRAPHS, "");
-            TupleQueryResult result = query.evaluate();
-            return new RepositoryResult<Resource>(
-                    new ExceptionConvertingIteration<Resource, RepositoryException>(
-                            new ConvertingIteration<BindingSet, Resource, QueryEvaluationException>(result) {
+
+        try{
+            String queryString = "SELECT DISTINCT ?_ WHERE { GRAPH ?_ { ?s ?p ?o } }";
+            TupleQuery tupleQuery = prepareTupleQuery(QueryLanguage.SPARQL, queryString);
+            TupleQueryResult result = tupleQuery.evaluate();
+            return
+                    new RepositoryResult<Resource>(
+                            new ExceptionConvertingIteration<Resource, RepositoryException>(
+                                    new ConvertingIteration<BindingSet, Resource, QueryEvaluationException>(result) {
+
+                                        @Override
+                                        protected Resource convert(BindingSet bindings)
+                                                throws QueryEvaluationException {
+                                            return (Resource) bindings.getValue("_");
+                                        }
+                                    }) {
 
                                 @Override
-                                protected Resource convert(BindingSet bindings)
-                                        throws QueryEvaluationException {
-                                    return (Resource) bindings.getValue("_");
+                                protected RepositoryException convert(Exception e) {
+                                    return new RepositoryException(e);
                                 }
-                            }) {
+                            });
 
-                        @Override
-                        protected RepositoryException convert(Exception e) {
-                            return new RepositoryException(e);
-                        }
-                    });
         } catch (MalformedQueryException e) {
             throw new RepositoryException(e);
         } catch (QueryEvaluationException e) {
             throw new RepositoryException(e);
         }
+
     }
 
     @Override
@@ -254,7 +259,17 @@ public class MarkLogicRepositoryConnection implements RepositoryConnection {
     //
     @Override
     public boolean hasStatement(Resource subj, URI pred, Value obj, boolean includeInferred, Resource... contexts) throws RepositoryException {
-        return false;
+        try {
+            BooleanQuery query = prepareBooleanQuery(SPARQL, SOMETHING, "");
+            setBindings(query, subj, pred, obj, contexts);
+            return query.evaluate();
+        }
+        catch (MalformedQueryException e) {
+            throw new RepositoryException(e);
+        }
+        catch (QueryEvaluationException e) {
+            throw new RepositoryException(e);
+        }
     }
 
     @Override

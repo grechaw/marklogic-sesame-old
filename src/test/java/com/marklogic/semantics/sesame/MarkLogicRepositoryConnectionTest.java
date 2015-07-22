@@ -1,7 +1,10 @@
 package com.marklogic.semantics.sesame;
 
 import com.marklogic.semantics.sesame.query.MarkLogicTupleQuery;
+import info.aduna.iteration.ConvertingIteration;
+import info.aduna.iteration.ExceptionConvertingIteration;
 import org.junit.*;
+import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
 import org.openrdf.model.Value;
 import org.openrdf.model.ValueFactory;
@@ -158,10 +161,44 @@ public class MarkLogicRepositoryConnectionTest {
         Assert.assertEquals("http://semanticbible.org/ns/2006/NTNames#AmphipolisGeodata", sV1.stringValue());
         Assert.assertEquals("http://semanticbible.org/ns/2006/NTNames#altitude", pV1.stringValue());
         Assert.assertEquals("0", oV1.stringValue());
-        conn.close();
-        rep.shutDown();
-
     }
+
+    @Test
+    public void testSPARQLQueryDistinct()
+            throws Exception {
+
+        try{
+        String queryString = "SELECT DISTINCT ?_ WHERE { GRAPH ?_ { ?s ?p ?o } }";
+        TupleQuery tupleQuery = conn.prepareTupleQuery(QueryLanguage.SPARQL, queryString);
+        TupleQueryResult result = tupleQuery.evaluate();
+        RepositoryResult<Resource> rr =
+         new RepositoryResult<Resource>(
+                new ExceptionConvertingIteration<Resource, RepositoryException>(
+                        new ConvertingIteration<BindingSet, Resource, QueryEvaluationException>(result) {
+
+                            @Override
+                            protected Resource convert(BindingSet bindings)
+                                    throws QueryEvaluationException {
+                                return (Resource) bindings.getValue("_");
+                            }
+                        }) {
+
+                    @Override
+                    protected RepositoryException convert(Exception e) {
+                        return new RepositoryException(e);
+                    }
+                });
+
+        Resource resource = rr.next();
+
+        logger.debug(resource.stringValue());
+
+    } catch (MalformedQueryException e) {
+        throw new RepositoryException(e);
+    } catch (QueryEvaluationException e) {
+        throw new RepositoryException(e);
+    }
+}
 
     @Test
     public void testSPARQLQueryWithPagination()
@@ -221,7 +258,6 @@ public class MarkLogicRepositoryConnectionTest {
             }
         });
         tupleQuery.evaluate();
-
     }
 
     @Test
@@ -259,7 +295,6 @@ public class MarkLogicRepositoryConnectionTest {
         Assert.assertEquals("http://semanticbible.org/ns/2006/NTNames#Jotham", sV.stringValue());
         Assert.assertEquals("http://semanticbible.org/ns/2006/NTNames#parentOf", pV.stringValue());
         Assert.assertEquals("http://semanticbible.org/ns/2006/NTNames#Ahaz", oV.stringValue());
-
     }
 
     @Ignore
@@ -353,7 +388,7 @@ public class MarkLogicRepositoryConnectionTest {
     @Test
     public void testUpdateQuery()
             throws Exception {
-        String defGraphQuery = "INSERT DATA { GRAPH <g27> { <http://marklogic.com/test> <pp1> <oo1> } }";
+        String defGraphQuery = "INSERT DATA { GRAPH <http://marklogic.com/test/g27> { <http://marklogic.com/test> <pp1> <oo1> } }";
         String checkQuery = "ASK WHERE { <http://marklogic.com/test> <pp1> <oo1> }";
         Update updateQuery = conn.prepareUpdate(QueryLanguage.SPARQL, defGraphQuery);
         updateQuery.execute();
@@ -376,6 +411,7 @@ public class MarkLogicRepositoryConnectionTest {
             // Add the first file
             conn.add(inputFile1, baseURI1, RDFFormat.TURTLE);
 
+
             // Add the second file
             conn.add(inputFile2, baseURI2, RDFFormat.TURTLE);
 
@@ -392,7 +428,7 @@ public class MarkLogicRepositoryConnectionTest {
         }
 
     }
-    @Ignore
+    @Test
     public void testContextIDs()
             throws Exception {
 
@@ -410,5 +446,8 @@ public class MarkLogicRepositoryConnectionTest {
             result.close();
         }
     }
+    @Test
+    public void testHasStatement(){
 
+    }
 }

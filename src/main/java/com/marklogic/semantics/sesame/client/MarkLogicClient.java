@@ -67,7 +67,7 @@ public class MarkLogicClient {
 
 	//graph query
 	public GraphQueryResult sendGraphQuery(String queryString,MapBindingSet bindings) throws IOException {
-		InputStream stream = _client.performGraphQuery(queryString, bindings,null);
+		InputStream stream = _client.performGraphQuery(queryString, bindings, null);
 
 		Set<RDFFormat> rdfFormats = RDFParserRegistry.getInstance().getKeys();
 		if (rdfFormats.isEmpty()) {
