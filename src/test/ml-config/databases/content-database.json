@@ -2,7 +2,5 @@
   "database-name": "%%DATABASE%%",
   "maintain-last-modified": true,
   "triple-index": true,
-  "collection-lexicon":true,
-  "schema-database": "%%SCHEMAS_DATABASE%%",
-  "triggers-database": "%%TRIGGERS_DATABASE%%"
+  "collection-lexicon":true
 }
