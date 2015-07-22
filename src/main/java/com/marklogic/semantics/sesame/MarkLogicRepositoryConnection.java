@@ -208,7 +208,6 @@ public class MarkLogicRepositoryConnection implements RepositoryConnection {
         } catch (QueryEvaluationException e) {
             throw new RepositoryException(e);
         }
-
     }
 
     @Override

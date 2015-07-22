@@ -9,7 +9,6 @@ import org.openrdf.model.Statement;
 import org.openrdf.model.Value;
 import org.openrdf.model.ValueFactory;
 import org.openrdf.model.impl.ValueFactoryImpl;
-import org.openrdf.model.vocabulary.RDF;
 import org.openrdf.query.*;
 import org.openrdf.repository.Repository;
 import org.openrdf.repository.RepositoryConnection;
@@ -431,21 +430,17 @@ public class MarkLogicRepositoryConnectionTest {
     @Test
     public void testContextIDs()
             throws Exception {
-
-        RepositoryResult<Statement> result = conn.getStatements(RDF.TYPE, RDF.TYPE, null, true);
+        RepositoryResult<Resource> result = conn.getContextIDs();
         try {
             Assert.assertTrue("result should not be empty", result.hasNext());
-        } finally {
-            result.close();
-        }
-
-        result = conn.getStatements(RDF.TYPE, RDF.TYPE, null, false);
-        try {
-            Assert.assertFalse("result should be empty", result.hasNext());
+            logger.debug("ContextIDs");
+            Assert.assertEquals("http://marklogic.com/test/my-graph", result.next().stringValue());
+            Assert.assertEquals("http://marklogic.com/test/g27",result.next().stringValue());
         } finally {
             result.close();
         }
     }
+
     @Test
     public void testHasStatement(){
 
